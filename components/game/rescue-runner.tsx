@@ -117,8 +117,8 @@ export function RescueRunner() {
         return roadLeft + laneW * l + laneW / 2;
       };
 
-      // Sprite scale
-      const spriteScale = () => Math.max(2, Math.min(W() / 120, 3.5));
+      // Sprite scale — larger for better visibility
+      const spriteScale = () => Math.max(2.5, Math.min(W() / 90, 4.5));
 
       // Controls
       const moveLeft = () => { if (lane > 0) lane--; };
@@ -216,7 +216,7 @@ export function RescueRunner() {
       // Draw HUD
       const drawHUD = () => {
         const w = W();
-        ctx.font = "bold 16px monospace";
+        ctx.font = "bold 20px monospace";
 
         // Score
         ctx.fillStyle = "#FFD700";
@@ -392,10 +392,14 @@ export function RescueRunner() {
           t.y -= 1;
           t.ttl--;
           ctx.globalAlpha = Math.min(1, t.ttl / 20);
-          ctx.font = "bold 13px monospace";
+          ctx.font = "bold 18px monospace";
           ctx.fillStyle = t.color;
           ctx.textAlign = "center";
+          // Draw text shadow for readability
+          ctx.shadowColor = "rgba(0,0,0,0.7)";
+          ctx.shadowBlur = 6;
           ctx.fillText(t.text, w / 2, t.y);
+          ctx.shadowBlur = 0;
           ctx.globalAlpha = 1;
           if (t.ttl <= 0) toasts.splice(i, 1);
         }
