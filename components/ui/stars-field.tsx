@@ -11,7 +11,8 @@ export function StarsField({ className }: { className?: string }) {
     const ctx = canvas.getContext("2d");
     if (!ctx) return;
 
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Cap DPR to 1 — sub-pixel dots don't benefit from retina
+    const dpr = 1;
     let raf = 0;
     let stars: { x: number; y: number; r: number; a: number; t: number }[] = [];
 
@@ -22,7 +23,7 @@ export function StarsField({ className }: { className?: string }) {
       canvas.height = p.clientHeight * dpr;
       canvas.style.width = p.clientWidth + "px";
       canvas.style.height = p.clientHeight + "px";
-      const count = Math.floor((canvas.width * canvas.height) / 9000);
+      const count = Math.floor((canvas.width * canvas.height) / 18000);
       stars = Array.from({ length: count }, () => ({
         x: Math.random() * canvas.width,
         y: Math.random() * canvas.height,

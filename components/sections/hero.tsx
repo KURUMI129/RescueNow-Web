@@ -10,6 +10,7 @@ import { GradientText } from "@/components/ui/gradient-text";
 import { MagnetDots } from "@/components/ui/magnet-dots";
 import { ShinyButton } from "@/components/ui/shiny-button";
 import { StarsField } from "@/components/ui/stars-field";
+import { useIsMobile } from "@/lib/use-is-mobile";
 
 const LiveMap = dynamic(() => import("@/components/ui/live-map"), {
   ssr: false,
@@ -21,12 +22,15 @@ const LiveMap = dynamic(() => import("@/components/ui/live-map"), {
 });
 
 export function Hero() {
+  const isMobile = useIsMobile();
+
   return (
     <section className="relative isolate overflow-hidden pt-32 pb-20 md:pt-40 md:pb-24 noise">
       <AuroraBackground />
       <div className="absolute inset-0 -z-10 grid-bg mask-fade-bottom opacity-70" />
-      <StarsField className="absolute inset-0 -z-10" />
-      <MagnetDots className="absolute inset-0 -z-10 opacity-80" />
+      {/* Skip heavy canvas animations on mobile — they cause significant jank */}
+      {!isMobile && <StarsField className="absolute inset-0 -z-10" />}
+      {!isMobile && <MagnetDots className="absolute inset-0 -z-10 opacity-80" />}
 
       <div className="mx-auto max-w-7xl px-5 sm:px-8">
         <div className="mx-auto max-w-4xl text-center">

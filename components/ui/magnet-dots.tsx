@@ -13,7 +13,8 @@ export function MagnetDots({ className }: { className?: string }) {
     if (!ctx) return;
 
     let raf = 0;
-    const dpr = Math.min(window.devicePixelRatio || 1, 2);
+    // Cap DPR to 1 — dots are too small to benefit from retina
+    const dpr = 1;
 
     const size = () => {
       const p = canvas.parentElement;
@@ -35,9 +36,9 @@ export function MagnetDots({ className }: { className?: string }) {
       const h = canvas.height;
       ctx.clearRect(0, 0, w, h);
 
-      const gap = 28 * dpr;
+      const gap = 38 * dpr;
       const r = 1.1 * dpr;
-      const reach = 120 * dpr;
+      const reach = 100 * dpr;
 
       const mx = mouse.current.x * dpr;
       const my = mouse.current.y * dpr;
