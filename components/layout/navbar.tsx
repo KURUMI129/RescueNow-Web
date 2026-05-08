@@ -83,7 +83,7 @@ export function Navbar() {
                 href="/game"
                 className="relative rounded-full px-4 py-2 text-sm font-medium text-brand-gold hover:text-brand-crimson transition-colors"
               >
-                🎮 Juego
+                🐕 Rex al Rescate
               </Link>
             </nav>
 
@@ -176,7 +176,7 @@ export function Navbar() {
                     onClick={() => setOpen(false)}
                     className="block rounded-xl px-4 py-3 text-base font-semibold text-brand-gold hover:bg-brand-gold/10 transition-colors"
                   >
-                    🎮 Juego
+                    🐕 Rex al Rescate
                   </Link>
                 </motion.div>
               </nav>

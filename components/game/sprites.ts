@@ -4,28 +4,41 @@
  * Each sprite is a 2D array of hex color strings (or "" for transparent).
  */
 
-// 18×20 ambulance (top-down, cleaner design with outline)
+// 18×22 ambulance with Rex driving (top-down, Rex visible through windshield)
+// Rex = brown San Bernardo with ears, eyes, nose
+const B = "#8B5E3C"; // brown fur
+const D = "#5C3A1E"; // dark brown (ears/markings)
+const N = "#222";     // nose/eyes
+const P = "#E8A0BF"; // pink tongue
+const W = "#fff";
+const R = "#E11D48";  // red
+const C = "#c00";     // body outline
+const G = "#ddd";     // gray stripe
+const BL = "#0EA5E9"; // blue cross
+
 export const AMBULANCE: string[][] = [
-  ["","","","","","#c00","#c00","#c00","#c00","#c00","#c00","#c00","#c00","","","","",""],
-  ["","","","","#c00","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#c00","","","",""],
-  ["","","","#c00","#fff","#fff","#E11D48","#fff","#fff","#fff","#E11D48","#fff","#fff","#fff","#c00","","",""],
-  ["","","","#c00","#fff","#E11D48","#E11D48","#E11D48","#fff","#E11D48","#E11D48","#E11D48","#fff","#fff","#c00","","",""],
-  ["","","","#c00","#fff","#fff","#E11D48","#fff","#0EA5E9","#fff","#E11D48","#fff","#fff","#fff","#c00","","",""],
-  ["","","#333","#c00","#fff","#fff","#fff","#0EA5E9","#0EA5E9","#0EA5E9","#fff","#fff","#fff","#fff","#c00","#333","",""],
-  ["","","#333","#c00","#fff","#fff","#fff","#fff","#0EA5E9","#fff","#fff","#fff","#fff","#fff","#c00","#333","",""],
-  ["","","","#c00","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#c00","","",""],
-  ["","","","#c00","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#c00","","",""],
-  ["","","","#c00","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#c00","","",""],
-  ["","","","#c00","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#c00","","",""],
-  ["","","","#c00","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#c00","","",""],
-  ["","","","#c00","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#c00","","",""],
-  ["","","","#c00","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#ddd","#c00","","",""],
-  ["","","#333","#c00","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#c00","#333","",""],
-  ["","","#333","#c00","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#fff","#c00","#333","",""],
-  ["","","","#c00","#E11D48","#E11D48","#fff","#fff","#fff","#fff","#fff","#fff","#E11D48","#E11D48","#c00","","",""],
-  ["","","","#c00","#c00","#c00","#c00","#c00","#c00","#c00","#c00","#c00","#c00","#c00","#c00","","",""],
-  ["","","","","#FFD700","#FFD700","","","","","","","#FFD700","#FFD700","","","",""],
-  ["","","","","","","","","","","","","","","","","",""],
+  ["","","","","","","",C,C,C,C,"","","","","","",""],
+  ["","","","","","",C,R,R,R,R,C,"","","","","",""],
+  ["","","","","",C,R,R,W,W,R,R,C,"","","","",""],
+  ["","","","","",C,W,D,"",D,"",D,W,C,"","","",""],
+  ["","","","","",C,W,D,D,"","",D,D,C,"","","",""],
+  ["","","","",C,W,W,B,B,B,B,B,B,W,C,"","",""],
+  ["","","","",C,W,B,N,"",B,B,"",N,W,C,"","",""],
+  ["","","","",C,W,B,B,B,N,B,B,B,W,C,"","",""],
+  ["","","","",C,W,B,B,P,P,P,B,B,W,C,"","",""],
+  ["","","","",C,G,G,G,G,G,G,G,G,G,C,"","",""],
+  ["","","","",C,W,W,W,BL,W,W,W,W,W,C,"","",""],
+  ["","","","",C,W,W,BL,BL,BL,W,W,W,W,C,"","",""],
+  ["","","","",C,W,W,W,BL,W,W,W,W,W,C,"","",""],
+  ["","","#333",C,W,W,W,W,W,W,W,W,W,W,C,"#333","",""],
+  ["","","#333",C,W,W,W,W,W,W,W,W,W,W,C,"#333","",""],
+  ["","","","",C,W,W,W,W,W,W,W,W,W,C,"","",""],
+  ["","","","",C,W,W,W,W,W,W,W,W,W,C,"","",""],
+  ["","","","",C,G,G,G,G,G,G,G,G,G,C,"","",""],
+  ["","","#333",C,W,W,W,W,W,W,W,W,W,W,C,"#333","",""],
+  ["","","","",C,R,R,W,W,W,W,W,R,R,C,"","",""],
+  ["","","","",C,C,C,C,C,C,C,C,C,C,C,"","",""],
+  ["","","","","","#FFD700","#FFD700","","","","","#FFD700","#FFD700","","","","",""],
 ];
 
 // 18×18 stranded car (yellow sedan with hazard lights blinking)
