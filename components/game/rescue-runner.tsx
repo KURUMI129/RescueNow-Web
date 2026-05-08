@@ -127,13 +127,13 @@ export function RescueRunner() {
 
     const spawn = () => {
       const r = Math.random();
-      const obsRate = 1 - cfg.powerUpRate;
+      const rates = cfg.spawnRates;
       let kind: EntityKind;
-      if (r < 0.35) kind = "car";
-      else if (r < 0.35 + obsRate * 0.35) kind = "pothole";
-      else if (r < 0.35 + obsRate * 0.65) kind = "cone";
-      else if (r < 0.35 + obsRate * 0.65 + cfg.powerUpRate * 0.4) kind = "shield";
-      else if (r < 0.35 + obsRate * 0.65 + cfg.powerUpRate * 0.75) kind = "fuel";
+      if (r < rates.car) kind = "car";
+      else if (r < rates.car + rates.pothole) kind = "pothole";
+      else if (r < rates.car + rates.pothole + rates.cone) kind = "cone";
+      else if (r < rates.car + rates.pothole + rates.cone + rates.shield) kind = "shield";
+      else if (r < rates.car + rates.pothole + rates.cone + rates.shield + rates.fuel) kind = "fuel";
       else kind = "medkit";
       entities.push({ lane: Math.floor(Math.random() * LANES), y: -50, kind });
     };
@@ -159,12 +159,12 @@ export function RescueRunner() {
       // Score — pushed down to avoid overlap with buttons
       ctx.fillStyle = "#FFD700"; ctx.textAlign = "center";
       ctx.fillText(`SCORE: ${score}`, w / 2, 28);
-      // Lives
+      // Shield — centered below score
+      if (shieldTimer > 0) { ctx.fillStyle = "#0EA5E9"; ctx.textAlign = "center"; ctx.fillText(`🛡️ ${Math.ceil(shieldTimer / 60)}s`, w / 2, 52); }
+      // Lives — right side, below buttons
       ctx.fillStyle = "#E11D48"; ctx.textAlign = "right";
       let lt = ""; for (let i = 0; i < lives; i++) lt += "❤️ ";
-      ctx.fillText(lt.trim(), w - 12, 56);
-      // Shield
-      if (shieldTimer > 0) { ctx.fillStyle = "#0EA5E9"; ctx.textAlign = "left"; ctx.fillText(`🛡️ ${Math.ceil(shieldTimer / 60)}s`, 12, 56); }
+      ctx.fillText(lt.trim(), w - 12, 52);
     };
 
     const tick = () => {
@@ -176,7 +176,8 @@ export function RescueRunner() {
       roadOffset = (roadOffset + speed) % 35;
       drawRoad();
 
-      if (frame % Math.max(20, cfg.spawnInterval - Math.floor(score / 200) * 3) === 0) spawn();
+      const currentSpawnInterval = Math.max(cfg.minSpawnInterval, cfg.spawnInterval - Math.floor(score / cfg.spawnAccelEvery));
+      if (frame % currentSpawnInterval === 0) spawn();
 
       const s = sc(), px = laneX(lane), py = h - 80;
 
@@ -336,6 +337,23 @@ export function RescueRunner() {
                 </button>
               );
             })}
+          </div>
+
+          {/* Power-up & obstacle guide */}
+          <div style={{
+            marginTop: 6, width: "100%", maxWidth: 320,
+            background: "rgba(255,255,255,0.03)", border: "1px solid rgba(255,255,255,0.06)",
+            borderRadius: 10, padding: "10px 14px", textAlign: "left",
+          }}>
+            <p style={{ color: "#94A3B8", fontSize: 11, margin: "0 0 6px", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>Guía de objetos</p>
+            <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11 }}>
+              <span style={{ color: "#FFD700" }}>🚗 Auto varado — Tócalo para rescatarlo (+100 pts)</span>
+              <span style={{ color: "#E11D48" }}>🕳️ Bache — ¡Esquívalo o pierdes una vida!</span>
+              <span style={{ color: "#FF6B00" }}>🔶 Cono — ¡Esquívalo o pierdes una vida!</span>
+              <span style={{ color: "#0EA5E9" }}>🛡️ Escudo SOS — Invencibilidad por 5 segundos</span>
+              <span style={{ color: "#10B981" }}>⛽ Gasolina — Bonus de +50 puntos extra</span>
+              <span style={{ color: "#E11D48" }}>🏥 Kit médico — Recupera una vida perdida</span>
+            </div>
           </div>
 
           <div style={{ color: "#475569", fontSize: 10, marginTop: 4 }}>Controles: ← → / A D / swipe · P = pausa</div>
