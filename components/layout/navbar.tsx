@@ -79,6 +79,12 @@ export function Navbar() {
                   {n.label}
                 </Link>
               ))}
+              <Link
+                href="/game"
+                className="relative rounded-full px-4 py-2 text-sm font-medium text-brand-gold hover:text-brand-crimson transition-colors"
+              >
+                🎮 Juego
+              </Link>
             </nav>
 
             <div className="flex items-center gap-2">
@@ -160,6 +166,19 @@ export function Navbar() {
                     </Link>
                   </motion.div>
                 ))}
+                <motion.div
+                  initial={{ opacity: 0, x: 20 }}
+                  animate={{ opacity: 1, x: 0 }}
+                  transition={{ delay: 0.05 + NAV.length * 0.05 }}
+                >
+                  <Link
+                    href="/game"
+                    onClick={() => setOpen(false)}
+                    className="block rounded-xl px-4 py-3 text-base font-semibold text-brand-gold hover:bg-brand-gold/10 transition-colors"
+                  >
+                    🎮 Juego
+                  </Link>
+                </motion.div>
               </nav>
 
               <div className="mt-auto">

@@ -24,11 +24,11 @@ const PREMIUM = [
   "Todo lo del plan gratuito",
   "IA sin límites con respuestas detalladas",
   "Diagnóstico mecánico paso a paso",
-  "Asesoría ante choques, seguros y tránsito",
+  "Asesoría legal ante choques, seguros y tránsito",
   "Primeros auxilios guiados",
-  "Tips de mantenimiento y rutas",
+  "Mantenimiento vehicular y tips por kilometraje",
+  "Videos tutoriales exclusivos",
   "Soporte prioritario",
-  "Sin anuncios, experiencia premium",
 ];
 
 export function Pricing() {
