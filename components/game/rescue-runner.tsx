@@ -5,12 +5,14 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM } from "@/components/game/audio";
 import { DIFFICULTIES, INTRO_LINES, type Difficulty } from "@/components/game/config";
-import { AMBULANCE, CAR_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, drawSprite } from "@/components/game/sprites";
+import { AMBULANCE, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, drawSprite } from "@/components/game/sprites";
 
 /* ── Types ── */
 type EntityKind = "car" | "pothole" | "cone" | "shield" | "fuel" | "medkit";
-interface Entity { lane: number; y: number; kind: EntityKind }
+type CarVariant = 0 | 1 | 2; // sedan, truck, moto
+interface Entity { lane: number; y: number; kind: EntityKind; carVariant?: CarVariant }
 interface Toast { text: string; color: string; y: number; ttl: number }
+interface Particle { x: number; y: number; vx: number; vy: number; color: string; life: number }
 type Screen = "menu" | "intro" | "play" | "paused" | "over";
 
 const LANES = 3;
@@ -31,10 +33,12 @@ export function RescueRunner() {
   const pausedRef = useRef(false);
   const [pausedUI, setPausedUI] = useState(false);
 
+  const hsKey = (d: Difficulty) => `rex-hs-${d}`;
+
   useEffect(() => {
-    const s = localStorage.getItem("rex-highscore");
+    const s = localStorage.getItem(hsKey(difficulty));
     if (s) setHighScore(parseInt(s, 10));
-  }, []);
+  }, [difficulty]);
 
   /* ── Toggle mute (ref-based, no re-render of game loop) ── */
   const toggleMute = () => {
@@ -81,6 +85,21 @@ export function RescueRunner() {
     let running = true;
     const entities: Entity[] = [];
     const toasts: Toast[] = [];
+    const particles: Particle[] = [];
+
+    const CAR_SPRITES = [CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED];
+
+    const spawnParticles = (x: number, y: number, color: string, count: number) => {
+      for (let i = 0; i < count; i++) {
+        particles.push({
+          x, y,
+          vx: (Math.random() - 0.5) * 6,
+          vy: (Math.random() - 0.5) * 6,
+          color,
+          life: 25 + Math.floor(Math.random() * 15),
+        });
+      }
+    };
 
     const resize = () => {
       const dpr = Math.min(window.devicePixelRatio || 1, 2);
@@ -135,7 +154,8 @@ export function RescueRunner() {
       else if (r < rates.car + rates.pothole + rates.cone + rates.shield) kind = "shield";
       else if (r < rates.car + rates.pothole + rates.cone + rates.shield + rates.fuel) kind = "fuel";
       else kind = "medkit";
-      entities.push({ lane: Math.floor(Math.random() * LANES), y: -50, kind });
+      const carVariant = (Math.floor(Math.random() * 3)) as CarVariant;
+      entities.push({ lane: Math.floor(Math.random() * LANES), y: -50, kind, carVariant });
     };
 
     const hit = (e: Entity, px: number, py: number) => {
@@ -187,7 +207,21 @@ export function RescueRunner() {
         if (e.y > h + 60) { entities.splice(i, 1); continue; }
         const ex = laneX(e.lane);
         switch (e.kind) {
-          case "car": drawSprite(ctx, CAR_STRANDED, ex - 9 * s, e.y - 9 * s, s); break;
+          case "car": {
+            const sprite = CAR_SPRITES[e.carVariant ?? 0];
+            const isSmall = e.carVariant === 2; // moto is smaller
+            const off = isSmall ? 7 : 9;
+            drawSprite(ctx, sprite, ex - off * s, e.y - off * s, s);
+            // Blinking hazard lights
+            if (Math.floor(frame / 15) % 2 === 0) {
+              ctx.fillStyle = "#FF4500";
+              ctx.globalAlpha = 0.9;
+              ctx.fillRect(ex - off * s + 2 * s, e.y - off * s, 2 * s, 2 * s);
+              ctx.fillRect(ex + (off - 4) * s, e.y - off * s, 2 * s, 2 * s);
+              ctx.globalAlpha = 1;
+            }
+            break;
+          }
           case "pothole": drawSprite(ctx, POTHOLE, ex - 7 * s, e.y - 7 * s, s); break;
           case "cone": drawSprite(ctx, CONE, ex - 7 * s, e.y - 7 * s, s); break;
           case "shield":
@@ -213,12 +247,14 @@ export function RescueRunner() {
               if (shieldTimer > 0) { toasts.push({ text: "¡Escudo!", color: "#0EA5E9", y: py - 40, ttl: 40 }); }
               else if (invincibleTimer <= 0) {
                 lives--; invincibleTimer = 90;
+                spawnParticles(px, py, "#E11D48", 12);
                 if (!mutedRef.current) sfxHit();
                 if (lives <= 0) {
                   running = false;
+                  spawnParticles(px, py, "#FFD700", 20);
                   if (!mutedRef.current) sfxGameOver();
                   stopBGM(); setFinalScore(score);
-                  if (score > highScore) { setHighScore(score); localStorage.setItem("rex-highscore", String(score)); }
+                  if (score > highScore) { setHighScore(score); localStorage.setItem(hsKey(diff), String(score)); }
                   setScreen("over"); cleanup(); return;
                 }
               } break;
@@ -247,6 +283,17 @@ export function RescueRunner() {
         ctx.shadowColor = "rgba(0,0,0,0.7)"; ctx.shadowBlur = 6;
         ctx.fillText(t.text, w / 2, t.y); ctx.shadowBlur = 0; ctx.globalAlpha = 1;
         if (t.ttl <= 0) toasts.splice(i, 1);
+      }
+
+      // Particles
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.life--;
+        ctx.globalAlpha = Math.max(0, p.life / 30);
+        ctx.fillStyle = p.color;
+        ctx.fillRect(p.x - 2, p.y - 2, 4, 4);
+        ctx.globalAlpha = 1;
+        if (p.life <= 0) particles.splice(i, 1);
       }
 
       drawHUD();
