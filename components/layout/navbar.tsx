@@ -97,7 +97,7 @@ export function Navbar() {
               <button
                 aria-label="Abrir menú"
                 onClick={() => setOpen(true)}
-                className="lg:hidden glass h-10 w-10 rounded-full flex items-center justify-center"
+                className="lg:hidden glass h-11 w-11 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center"
               >
                 <Menu className="h-[18px] w-[18px]" />
               </button>
