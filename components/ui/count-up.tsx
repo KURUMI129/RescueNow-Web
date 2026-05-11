@@ -19,11 +19,27 @@ export function CountUp({
   className?: string;
 }) {
   const ref = useRef<HTMLSpanElement>(null);
-  const inView = useInView(ref, { once: true, margin: "-80px" });
+  const inView = useInView(ref, { once: true, amount: 0.2 });
   const [value, setValue] = useState(0);
+  const [forced, setForced] = useState(false);
+
+  // Fallback defensivo: si en 1.5s no disparó pero el elemento está dentro del viewport,
+  // forzamos el inicio. Evita el bug en móvil donde el observer no se activa.
+  useEffect(() => {
+    if (inView || forced) return;
+    const t = setTimeout(() => {
+      const el = ref.current;
+      if (!el) return;
+      const rect = el.getBoundingClientRect();
+      if (rect.top < window.innerHeight && rect.bottom > 0) {
+        setForced(true);
+      }
+    }, 1500);
+    return () => clearTimeout(t);
+  }, [inView, forced]);
 
   useEffect(() => {
-    if (!inView) return;
+    if (!inView && !forced) return;
     let raf = 0;
     const start = performance.now();
     const tick = (now: number) => {
@@ -34,7 +50,7 @@ export function CountUp({
     };
     raf = requestAnimationFrame(tick);
     return () => cancelAnimationFrame(raf);
-  }, [inView, end, duration]);
+  }, [inView, forced, end, duration]);
 
   return (
     <span ref={ref} className={className}>
