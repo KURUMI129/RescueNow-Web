@@ -623,7 +623,15 @@ export function RescueRunner() {
       {/* ── GAME CANVAS ── */}
       {(screen === "play" || screen === "paused") && (
         <div style={{ flex: 1, position: "relative" }}>
-          <canvas ref={canvasRef} style={{ display: "block", width: "100%", height: "100%", touchAction: "none" }} />
+          <div
+            className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
+            aria-hidden
+          >
+            <div className="parallax-layer parallax-mountains" />
+            <div className="parallax-layer parallax-city" />
+            <div className="parallax-layer parallax-rail" />
+          </div>
+          <canvas ref={canvasRef} className="relative z-10" style={{ display: "block", width: "100%", height: "100%", touchAction: "none" }} />
           {/* Pause overlay */}
           {pausedUI && (
             <div style={{
