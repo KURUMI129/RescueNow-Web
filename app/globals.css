@@ -209,6 +209,12 @@ body {
 @keyframes parallax-medium{ from { transform: translateX(0); } to { transform: translateX(-1200px); } }
 @keyframes parallax-fast  { from { transform: translateX(0); } to { transform: translateX(-1600px); } }
 
+@keyframes title-slide {
+  0%   { transform: translateX(-100%); opacity: 0; }
+  60%  { transform: translateX(8%); opacity: 1; }
+  100% { transform: translateX(0); opacity: 1; }
+}
+
 .leaflet-container {
   font-family: inherit;
   background: transparent !important;

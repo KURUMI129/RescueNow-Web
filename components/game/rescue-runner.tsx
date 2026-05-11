@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM, updateBGMTier, sfxVictoryJingle, barkHappy, barkAlert, whineSad, startPanting, stopPanting } from "@/components/game/audio";
+import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM, updateBGMTier, sfxVictoryJingle, barkHappy, barkAlert, whineSad, startPanting, stopPanting, barkIntro } from "@/components/game/audio";
 import { DIFFICULTIES, INTRO_LINES, type Difficulty } from "@/components/game/config";
 import { ParticlePool } from "@/components/game/effects";
 import { AMBULANCE, AMBULANCE_FRAMES, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, REX_FULL, REX_FULL_COMANDO, drawSprite } from "@/components/game/sprites";
@@ -46,6 +46,7 @@ function RexFullCanvas({ size, comando }: { size: number; comando: boolean }) {
 export function RescueRunner() {
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [screen, setScreen] = useState<Screen>("menu");
+  const [introPhase, setIntroPhase] = useState<"title" | "push-start" | "ready" | "playing">("title");
   const [difficulty, setDifficulty] = useState<Difficulty>("normal");
   const [finalScore, setFinalScore] = useState(0);
   const [highScore, setHighScore] = useState(0);
@@ -79,6 +80,19 @@ export function RescueRunner() {
       typeof window !== "undefined" &&
         window.localStorage.getItem("rexnow-skin-comando-active") === "1",
     );
+  }, []);
+
+  /* ── Capcom-style intro sequence ── */
+  useEffect(() => {
+    const t1 = setTimeout(() => setIntroPhase("push-start"), 1200);
+    const t2 = setTimeout(() => {
+      setIntroPhase("ready");
+      barkIntro();
+    }, 1400);
+    return () => {
+      clearTimeout(t1);
+      clearTimeout(t2);
+    };
   }, []);
 
   const hsKey = (d: Difficulty) => `rex-hs-${d}`;
@@ -546,6 +560,47 @@ export function RescueRunner() {
 
   return (
     <div style={{ position: "fixed", inset: 0, background: "#0d1117", display: "flex", flexDirection: "column", fontFamily: "monospace", overflow: "hidden" }}>
+
+      {/* Capcom-style intro overlay */}
+      {introPhase !== "playing" && (
+        <div style={{ position: "absolute", inset: 0, zIndex: 100, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", background: "rgba(0,0,0,0.85)", backdropFilter: "blur(4px)" }}>
+          <h1
+            style={{
+              fontSize: 56,
+              fontWeight: 900,
+              color: "#E11D48",
+              margin: 0,
+              letterSpacing: 4,
+              textShadow: "0 0 24px #E11D48, 0 0 60px #E11D48",
+              animation: "title-slide 0.8s cubic-bezier(.34,1.56,.64,1)",
+              fontFamily: "monospace",
+              textAlign: "center",
+              padding: "0 16px",
+            }}
+          >
+            REX AL RESCATE
+          </h1>
+          {introPhase === "ready" && (
+            <button
+              onClick={() => setIntroPhase("playing")}
+              className="animate-pulse"
+              style={{
+                marginTop: 40,
+                fontSize: 22,
+                fontWeight: 900,
+                color: "#FDE047",
+                background: "transparent",
+                border: "none",
+                cursor: "pointer",
+                fontFamily: "monospace",
+                letterSpacing: 2,
+              }}
+            >
+              🐕 PUSH START
+            </button>
+          )}
+        </div>
+      )}
 
       {/* Top bar — always visible */}
       <div style={{ position: "absolute", top: 10, left: 10, right: 10, zIndex: 50, display: "flex", justifyContent: "space-between", pointerEvents: "none" }}>
