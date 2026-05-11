@@ -157,7 +157,7 @@ export function Pricing() {
               </div>
             </div>
 
-            <div className="relative">
+            <div className="relative pr-28">
               <p className="text-xs uppercase tracking-[0.18em] font-bold text-brand-gold">
                 Premium
               </p>
