@@ -75,14 +75,14 @@ export function Footer() {
                 target="_blank"
                 rel="noreferrer noopener"
                 aria-label="WhatsApp"
-                className="glass h-10 w-10 rounded-full flex items-center justify-center hover:-translate-y-0.5 hover:text-[#25D366] transition-all"
+                className="glass h-11 w-11 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center hover:-translate-y-0.5 hover:text-[#25D366] transition-all"
               >
                 <MessageCircle className="h-4 w-4" />
               </a>
               <a
                 href={`mailto:${EMAIL}`}
                 aria-label="Correo"
-                className="glass h-10 w-10 rounded-full flex items-center justify-center hover:-translate-y-0.5 hover:text-brand-medical transition-all"
+                className="glass h-11 w-11 min-h-[44px] min-w-[44px] rounded-full flex items-center justify-center hover:-translate-y-0.5 hover:text-brand-medical transition-all"
               >
                 <Mail className="h-4 w-4" />
               </a>
