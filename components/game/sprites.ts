@@ -255,6 +255,54 @@ export const MEDKIT: string[][] = [
   ["","","","","","","","","","","","","",""],
 ];
 
+// Rex de cuerpo entero sentado con gorra, vista frontal. 24 cols × 26 rows.
+export const REX_FULL: string[][] = [
+  ["","","","","","","","",HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,"","","","","","","",""],
+  ["","","","","","",HCAP,HCAP,HCAP,HCROSS,HCROSS,HCAP,HCAP,HCROSS,HCROSS,HCAP,HCAP,HCAP,"","","","","",""],
+  ["","","","","","",HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,"","","","","",""],
+  ["","","","","","","",D,D,D,D,D,D,D,D,D,D,"","","","","","",""],
+  ["","","","","",D,K,W,W,W,W,W,W,W,W,W,W,K,D,"","","","",""],
+  ["","","","",D,K,K,W,W,W,W,W,W,W,W,W,W,K,K,D,"","","",""],
+  ["","","","",D,K,W,W,K,W,W,W,W,W,W,K,W,W,K,D,"","","",""],
+  ["","","","",D,K,W,K,N,W,W,W,W,W,W,N,K,W,K,D,"","","",""],
+  ["","","","",D,K,K,K,K,W,W,W,W,W,W,K,K,K,K,D,"","","",""],
+  ["","","","",D,K,W,W,W,W,N,W,W,N,W,W,W,W,K,D,"","","",""],
+  ["","","","","",D,W,W,W,K,N,N,N,N,K,W,W,W,D,"","","","",""],
+  ["","","","","",D,W,W,W,W,P,P,P,P,W,W,W,W,D,"","","","",""],
+  ["","","","","","",D,W,W,W,W,W,W,W,W,W,W,D,"","","","","",""],
+  ["","","","","","","",D,W,W,R,R,R,R,W,W,D,"","","","","","",""],
+  ["","","","","","",D,K,K,K,K,K,K,K,K,K,K,D,"","","","","",""],
+  ["","","","",D,K,K,K,K,K,K,K,K,K,K,K,K,K,K,D,"","","",""],
+  ["","","","",D,K,W,K,K,K,K,K,K,K,K,K,K,K,K,D,"","","",""],
+  ["","","","",D,K,W,K,K,W,K,K,K,K,K,K,K,K,K,D,"","","",""],
+  ["","","","",D,K,K,K,K,K,K,K,K,K,K,K,K,K,K,D,"","","",""],
+  ["","",D,K,K,K,K,"","","","","","","","","","","","","",D,K,"",""],
+  ["",D,K,K,"","","","","","","","","","","","","","","","","",D,K,""],
+  ["",D,K,"","","","","","","","","","","","","","","","","","",D,K,""],
+  ["","","","","","",D,K,K,K,"","","","",K,K,K,D,"","","","","",""],
+  ["","","","","","",D,K,K,K,"","","","",K,K,K,D,"","","","","",""],
+  ["","","","","","",D,D,D,D,"","","","",D,D,D,D,"","","","","",""],
+  ["","","","","","","","","","","","","","","","","","","","","","","",""],
+];
+
+// Rex Comando: gorra negra + cinta táctica en el pecho
+export const REX_FULL_COMANDO: string[][] = REX_FULL.map((row) =>
+  row.map((cell) => {
+    if (cell === HCAP) return BCAP;
+    if (cell === HCROSS) return BCAP;
+    return cell;
+  }),
+);
+// Sobreescribir la "cruz roja" del cuello por cinta táctica
+{
+  const r = 13;
+  for (let c = 10; c <= 13; c++) {
+    if (REX_FULL_COMANDO[r] && REX_FULL_COMANDO[r][c] === R) {
+      REX_FULL_COMANDO[r][c] = TACT;
+    }
+  }
+}
+
 /** Draw a pixel sprite onto a canvas context */
 export function drawSprite(
   ctx: CanvasRenderingContext2D,

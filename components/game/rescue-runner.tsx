@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM } from "@/components/game/audio";
 import { DIFFICULTIES, INTRO_LINES, type Difficulty } from "@/components/game/config";
-import { AMBULANCE, AMBULANCE_FRAMES, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, drawSprite } from "@/components/game/sprites";
+import { AMBULANCE, AMBULANCE_FRAMES, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, REX_FULL, REX_FULL_COMANDO, drawSprite } from "@/components/game/sprites";
 
 /* ── Types ── */
 type EntityKind = "car" | "pothole" | "cone" | "shield" | "fuel" | "medkit";
@@ -17,6 +17,29 @@ type Screen = "menu" | "intro" | "play" | "paused" | "over";
 
 const LANES = 3;
 const RESCUE_MSGS = ["¡SOS Activado!", "¡Ficha médica enviada!", "¡Vehículo rescatado!", "¡Emergencia resuelta!", "¡Rex al rescate! 🐾"];
+
+/* ── Rex full-body pixel-art canvas helper ── */
+function RexFullCanvas({ size, comando }: { size: number; comando: boolean }) {
+  const ref = useRef<HTMLCanvasElement>(null);
+  useEffect(() => {
+    const canvas = ref.current;
+    if (!canvas) return;
+    const ctx = canvas.getContext("2d");
+    if (!ctx) return;
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = size * dpr;
+    canvas.height = size * dpr;
+    canvas.style.width = `${size}px`;
+    canvas.style.height = `${size}px`;
+    ctx.imageSmoothingEnabled = false;
+    ctx.scale(dpr, dpr);
+    ctx.clearRect(0, 0, size, size);
+    const sprite = comando ? REX_FULL_COMANDO : REX_FULL;
+    const scale = size / sprite[0].length;
+    drawSprite(ctx, sprite, 0, 0, scale);
+  }, [size, comando]);
+  return <canvas ref={ref} />;
+}
 
 /* ── Component ── */
 export function RescueRunner() {
@@ -36,6 +59,14 @@ export function RescueRunner() {
   // Animation frame refs: direction (-1 left, 0 none, 1 right) and last hit timestamp
   const lastInputDirRef = useRef<number>(0);
   const lastHitAtRef = useRef<number>(0);
+
+  const [skinComandoActive, setSkinComandoActive] = useState(false);
+  useEffect(() => {
+    setSkinComandoActive(
+      typeof window !== "undefined" &&
+        window.localStorage.getItem("rexnow-skin-comando-active") === "1",
+    );
+  }, []);
 
   const hsKey = (d: Difficulty) => `rex-hs-${d}`;
 
@@ -373,7 +404,7 @@ export function RescueRunner() {
       {/* ── MENU ── */}
       {screen === "menu" && (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14, padding: 24, textAlign: "center", overflowY: "auto" }}>
-          <div style={{ fontSize: 48, lineHeight: 1 }}>🚑</div>
+          <RexFullCanvas size={140} comando={skinComandoActive} />
           <h1 style={{ fontSize: 26, fontWeight: 900, color: "#fff", margin: 0, letterSpacing: 2 }}>REX AL RESCATE</h1>
           <p style={{ color: "#FFD700", fontSize: 13, margin: 0, fontWeight: 700 }}>MINI JUEGO RETRO 16-BIT</p>
           <p style={{ color: "#94A3B8", fontSize: 12, maxWidth: 300, lineHeight: 1.6, margin: 0 }}>
@@ -488,7 +519,7 @@ export function RescueRunner() {
       {/* ── GAME OVER ── */}
       {screen === "over" && (
         <div style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", gap: 14, padding: 24, textAlign: "center" }}>
-          <div style={{ fontSize: 42 }}>💥</div>
+          <RexFullCanvas size={80} comando={skinComandoActive} />
           <h2 style={{ fontSize: 24, fontWeight: 900, color: "#E11D48", margin: 0, letterSpacing: 2 }}>GAME OVER</h2>
           <div style={{ color: "#fff", fontSize: 32, fontWeight: 900 }}>{finalScore}<span style={{ color: "#94A3B8", fontSize: 14, marginLeft: 6 }}>PTS</span></div>
           {finalScore >= highScore && finalScore > 0 && (
