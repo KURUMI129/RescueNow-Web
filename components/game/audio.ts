@@ -244,3 +244,99 @@ export function sfxVictoryJingle() {
     osc.stop(startT + stepInterval);
   });
 }
+
+/* ─── Voz de Rex (ladridos procedurales) ─── */
+
+export function barkHappy() {
+  const ctx = getCtx();
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(400, t);
+  osc.frequency.exponentialRampToValueAtTime(820, t + 0.05);
+  osc.frequency.exponentialRampToValueAtTime(220, t + 0.18);
+  gain.gain.setValueAtTime(0.18, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.22);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.25);
+}
+
+export function barkAlert() {
+  const ctx = getCtx();
+  const t = ctx.currentTime;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "triangle";
+  osc.frequency.setValueAtTime(600, t);
+  osc.frequency.exponentialRampToValueAtTime(900, t + 0.04);
+  osc.frequency.exponentialRampToValueAtTime(350, t + 0.12);
+  gain.gain.setValueAtTime(0.14, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + 0.14);
+  osc.connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + 0.16);
+}
+
+export function whineSad(long = false) {
+  const ctx = getCtx();
+  const t = ctx.currentTime;
+  const dur = long ? 0.9 : 0.45;
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = "sawtooth";
+  osc.frequency.setValueAtTime(560, t);
+  osc.frequency.exponentialRampToValueAtTime(330, t + dur * 0.4);
+  osc.frequency.exponentialRampToValueAtTime(180, t + dur);
+  gain.gain.setValueAtTime(0.12, t);
+  gain.gain.exponentialRampToValueAtTime(0.001, t + dur + 0.05);
+  const lp = ctx.createBiquadFilter();
+  lp.type = "lowpass";
+  lp.frequency.value = 1200;
+  osc.connect(lp).connect(gain).connect(ctx.destination);
+  osc.start(t);
+  osc.stop(t + dur + 0.05);
+}
+
+let pantingInterval: ReturnType<typeof setInterval> | null = null;
+export function startPanting() {
+  if (pantingInterval) return;
+  pantingInterval = setInterval(() => {
+    const ctx = getCtx();
+    const t = ctx.currentTime;
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(220, t);
+    osc.frequency.exponentialRampToValueAtTime(160, t + 0.08);
+    gain.gain.setValueAtTime(0.03, t);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + 0.10);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t);
+    osc.stop(t + 0.12);
+  }, 420);
+}
+export function stopPanting() {
+  if (pantingInterval) {
+    clearInterval(pantingInterval);
+    pantingInterval = null;
+  }
+}
+
+export function barkIntro() {
+  const ctx = getCtx();
+  const t = ctx.currentTime;
+  [440, 780, 580].forEach((f, i) => {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = "triangle";
+    osc.frequency.setValueAtTime(f, t + i * 0.06);
+    osc.frequency.exponentialRampToValueAtTime(f * 0.5, t + i * 0.06 + 0.18);
+    gain.gain.setValueAtTime(0.14, t + i * 0.06);
+    gain.gain.exponentialRampToValueAtTime(0.001, t + i * 0.06 + 0.2);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(t + i * 0.06);
+    osc.stop(t + i * 0.06 + 0.22);
+  });
+}

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM, updateBGMTier, sfxVictoryJingle } from "@/components/game/audio";
+import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM, updateBGMTier, sfxVictoryJingle, barkHappy, barkAlert, whineSad, startPanting, stopPanting } from "@/components/game/audio";
 import { DIFFICULTIES, INTRO_LINES, type Difficulty } from "@/components/game/config";
 import { AMBULANCE, AMBULANCE_FRAMES, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, REX_FULL, REX_FULL_COMANDO, drawSprite } from "@/components/game/sprites";
 
@@ -128,6 +128,12 @@ export function RescueRunner() {
         if ((prev < 50 && score >= 50) || (prev < 100 && score >= 100) || (prev < 200 && score >= 200)) {
           sfxVictoryJingle();
         }
+      }
+      // Panting: between 100 and 200 pts
+      if (score >= 100 && score < 200) {
+        startPanting();
+      } else {
+        stopPanting();
       }
       prevScoreRef.current = score;
     };
@@ -297,26 +303,49 @@ export function RescueRunner() {
             case "car":
               addScore(100);
               toasts.push({ text: RESCUE_MSGS[Math.floor(Math.random() * RESCUE_MSGS.length)], color: "#10B981", y: py - 40, ttl: 60 });
-              if (!mutedRef.current) sfxRescue(); break;
+              if (!mutedRef.current) {
+                sfxRescue();
+                barkHappy();
+              }
+              break;
             case "pothole": case "cone":
               if (shieldTimer > 0) { toasts.push({ text: "¡Escudo!", color: "#0EA5E9", y: py - 40, ttl: 40 }); }
               else if (invincibleTimer <= 0) {
                 lives--; invincibleTimer = 90;
                 lastHitAtRef.current = Date.now();
                 spawnParticles(px, py, "#E11D48", 12);
-                if (!mutedRef.current) sfxHit();
+                if (!mutedRef.current) {
+                  sfxHit();
+                  whineSad(false);
+                }
                 if (lives <= 0) {
                   running = false;
                   spawnParticles(px, py, "#FFD700", 20);
-                  if (!mutedRef.current) sfxGameOver();
+                  if (!mutedRef.current) {
+                    sfxGameOver();
+                    whineSad(true);
+                    stopPanting();
+                  }
                   stopBGM(); setFinalScore(score);
                   if (score > highScore) { setHighScore(score); localStorage.setItem(hsKey(diff), String(score)); }
                   setScreen("over"); cleanup(); return;
                 }
               } break;
-            case "shield": shieldTimer = 300; if (!mutedRef.current) sfxPickup(); toasts.push({ text: "¡SOS Shield!", color: "#0EA5E9", y: py - 40, ttl: 50 }); break;
-            case "fuel": addScore(50); if (!mutedRef.current) sfxPickup(); toasts.push({ text: "+50 ⛽", color: "#10B981", y: py - 40, ttl: 40 }); break;
-            case "medkit": if (lives < cfg.lives) lives++; if (!mutedRef.current) sfxPickup(); toasts.push({ text: "+1 ❤️", color: "#E11D48", y: py - 40, ttl: 50 }); break;
+            case "shield": shieldTimer = 300; if (!mutedRef.current) {
+              sfxPickup();
+              barkAlert();
+            }
+            toasts.push({ text: "¡SOS Shield!", color: "#0EA5E9", y: py - 40, ttl: 50 }); break;
+            case "fuel": addScore(50); if (!mutedRef.current) {
+              sfxPickup();
+              barkAlert();
+            }
+            toasts.push({ text: "+50 ⛽", color: "#10B981", y: py - 40, ttl: 40 }); break;
+            case "medkit": if (lives < cfg.lives) lives++; if (!mutedRef.current) {
+              sfxPickup();
+              barkAlert();
+            }
+            toasts.push({ text: "+1 ❤️", color: "#E11D48", y: py - 40, ttl: 50 }); break;
           }
           entities.splice(i, 1);
         }
