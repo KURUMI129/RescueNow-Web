@@ -62,6 +62,11 @@ export function RescueRunner() {
   const lastHitAtRef = useRef<number>(0);
   const prevScoreRef = useRef<number>(0);
 
+  // Visual effect refs
+  const shakeRef = useRef(0);   // time remaining for screen shake (seconds)
+  const slowMoRef = useRef(0);  // time remaining for slow-mo (seconds)
+  const flashRef = useRef(0);   // time remaining for white flash (seconds)
+
   const particlesRef = useRef<ParticlePool | null>(null);
   useEffect(() => {
     particlesRef.current = new ParticlePool(80);
@@ -134,6 +139,11 @@ export function RescueRunner() {
         if ((prev < 50 && score >= 50) || (prev < 100 && score >= 100) || (prev < 200 && score >= 200)) {
           sfxVictoryJingle();
         }
+      }
+      // Slow-mo + flash on milestones 100 / 200 / 300
+      if ((prev < 100 && score >= 100) || (prev < 200 && score >= 200) || (prev < 300 && score >= 300)) {
+        slowMoRef.current = 0.8;
+        flashRef.current = 0.25;
       }
       // Panting: between 100 and 200 pts
       if (score >= 100 && score < 200) {
@@ -258,12 +268,32 @@ export function RescueRunner() {
     const tick = (timestamp: number) => {
       if (!running) return;
       if (pausedRef.current) { requestAnimationFrame(tick); return; }
-      const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+      const realDt = Math.min((timestamp - lastTime) / 1000, 0.05);
       lastTime = timestamp;
+
+      // Slow-mo effect: scale dt down, decrement using real time
+      let effectiveDt = realDt;
+      if (slowMoRef.current > 0) {
+        effectiveDt = realDt * 0.3;
+        slowMoRef.current = Math.max(0, slowMoRef.current - realDt);
+      }
+      // Decay shake and flash using real time
+      shakeRef.current = Math.max(0, shakeRef.current - realDt);
+      flashRef.current = Math.max(0, flashRef.current - realDt);
+
+      const dt = effectiveDt;
       const w = W(), h = H();
       ctx.clearRect(0, 0, w, h);
       speed = cfg.baseSpeed + Math.floor(score / 500) * cfg.speedInc;
       roadOffset = (roadOffset + speed) % 35;
+
+      // Begin shake transform — wraps all world drawing
+      ctx.save();
+      if (shakeRef.current > 0) {
+        const intensity = (shakeRef.current / 0.2) * 8;
+        ctx.translate((Math.random() - 0.5) * intensity, (Math.random() - 0.5) * intensity);
+      }
+
       drawRoad();
 
       const currentSpawnInterval = Math.max(cfg.minSpawnInterval, cfg.spawnInterval - Math.floor(score / cfg.spawnAccelEvery));
@@ -329,6 +359,7 @@ export function RescueRunner() {
                 lives--; invincibleTimer = 90;
                 lastHitAtRef.current = Date.now();
                 spawnParticles(px, py, "#E11D48", 12);
+                shakeRef.current = 0.2;
                 if (!mutedRef.current) {
                   sfxHit();
                   whineSad(false);
@@ -407,6 +438,15 @@ export function RescueRunner() {
       particlesRef.current?.update(dt);
       particlesRef.current?.draw(ctx);
       // TODO: close-miss dust en una iteración futura
+
+      // End shake transform — restore before flash so flash is stable
+      ctx.restore();
+
+      // White flash overlay (not shaken, drawn over world but under HUD)
+      if (flashRef.current > 0) {
+        ctx.fillStyle = `rgba(255,255,255,${flashRef.current / 0.25})`;
+        ctx.fillRect(0, 0, w, h);
+      }
 
       drawHUD();
       for (let sy = 0; sy < h; sy += 3) { ctx.fillStyle = "rgba(0,0,0,0.06)"; ctx.fillRect(0, sy, w, 1); }
