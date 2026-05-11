@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 
-import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM } from "@/components/game/audio";
+import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM, updateBGMTier, sfxVictoryJingle } from "@/components/game/audio";
 import { DIFFICULTIES, INTRO_LINES, type Difficulty } from "@/components/game/config";
 import { AMBULANCE, AMBULANCE_FRAMES, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, REX_FULL, REX_FULL_COMANDO, drawSprite } from "@/components/game/sprites";
 
@@ -59,6 +59,7 @@ export function RescueRunner() {
   // Animation frame refs: direction (-1 left, 0 none, 1 right) and last hit timestamp
   const lastInputDirRef = useRef<number>(0);
   const lastHitAtRef = useRef<number>(0);
+  const prevScoreRef = useRef<number>(0);
 
   const [skinComandoActive, setSkinComandoActive] = useState(false);
   useEffect(() => {
@@ -115,8 +116,21 @@ export function RescueRunner() {
     if (!ctx) return;
     const cfg = DIFFICULTIES[diff];
 
+    prevScoreRef.current = 0;
     let lane = 1, score = 0, lives = cfg.lives, frame = 0;
     let speed = cfg.baseSpeed, shieldTimer = 0, invincibleTimer = 0, roadOffset = 0;
+
+    const addScore = (pts: number) => {
+      const prev = score;
+      score += pts;
+      if (!mutedRef.current) {
+        updateBGMTier(score);
+        if ((prev < 50 && score >= 50) || (prev < 100 && score >= 100) || (prev < 200 && score >= 200)) {
+          sfxVictoryJingle();
+        }
+      }
+      prevScoreRef.current = score;
+    };
     let running = true;
     const entities: Entity[] = [];
     const toasts: Toast[] = [];
@@ -281,7 +295,7 @@ export function RescueRunner() {
         if (hit(e, px, py)) {
           switch (e.kind) {
             case "car":
-              score += 100;
+              addScore(100);
               toasts.push({ text: RESCUE_MSGS[Math.floor(Math.random() * RESCUE_MSGS.length)], color: "#10B981", y: py - 40, ttl: 60 });
               if (!mutedRef.current) sfxRescue(); break;
             case "pothole": case "cone":
@@ -301,7 +315,7 @@ export function RescueRunner() {
                 }
               } break;
             case "shield": shieldTimer = 300; if (!mutedRef.current) sfxPickup(); toasts.push({ text: "¡SOS Shield!", color: "#0EA5E9", y: py - 40, ttl: 50 }); break;
-            case "fuel": score += 50; if (!mutedRef.current) sfxPickup(); toasts.push({ text: "+50 ⛽", color: "#10B981", y: py - 40, ttl: 40 }); break;
+            case "fuel": addScore(50); if (!mutedRef.current) sfxPickup(); toasts.push({ text: "+50 ⛽", color: "#10B981", y: py - 40, ttl: 40 }); break;
             case "medkit": if (lives < cfg.lives) lives++; if (!mutedRef.current) sfxPickup(); toasts.push({ text: "+1 ❤️", color: "#E11D48", y: py - 40, ttl: 50 }); break;
           }
           entities.splice(i, 1);
