@@ -29,9 +29,9 @@ const INITIAL: Message[] = [
     from: "rex",
     text: "¡Guau! 🐕 Soy Rex. Estoy aquí para resolverte dudas sobre RescueNow: planes, funciones, privacidad o soporte. ¿En qué te echo una pata?",
     suggestions: [
+      "¿Cómo se juega Rex al Rescate?",
       "¿Qué incluye el Premium?",
-      "¿Cómo funciona el SOS?",
-      "Contactar soporte",
+      "¿Tienes easter eggs?",
     ],
   },
 ];
@@ -47,6 +47,9 @@ export function RexWidget() {
   const [typing, setTyping] = useState(false);
   const [bubble, setBubble] = useState<string | null>(null);
   const [showForm, setShowForm] = useState(false);
+  const [tapCount, setTapCount] = useState(0);
+  const [tapAt, setTapAt] = useState(0);
+  const [cookie, setCookie] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -185,8 +188,44 @@ export function RexWidget() {
         )}
       </AnimatePresence>
 
+      <AnimatePresence>
+        {cookie && (
+          <motion.div
+            key="cookie"
+            initial={{ y: -200, opacity: 0, rotate: -45 }}
+            animate={{ y: 0, opacity: 1, rotate: 0 }}
+            exit={{ y: 30, opacity: 0, scale: 0.6 }}
+            transition={{ duration: 0.6, ease: [0.34, 1.56, 0.64, 1] }}
+            className="fixed z-[72] bottom-24 right-7 sm:bottom-28 sm:right-9 text-4xl pointer-events-none select-none"
+            aria-hidden
+          >
+            🍪
+          </motion.div>
+        )}
+      </AnimatePresence>
+
       <motion.button
-        onClick={() => setOpen((o) => !o)}
+        onClick={() => {
+          if (open) {
+            setOpen(false);
+            return;
+          }
+          const now = Date.now();
+          const fresh = now - tapAt > 3000 ? 1 : tapCount + 1;
+          setTapAt(now);
+          setTapCount(fresh);
+          if (fresh >= 7) {
+            setCookie(true);
+            setTapCount(0);
+            // Disparar bark del audio del juego (importamos abajo)
+            try {
+              import("@/components/game/audio").then((m) => (m as any).barkHappy?.());
+            } catch {}
+            setTimeout(() => setCookie(false), 1800);
+          } else {
+            setOpen(true);
+          }
+        }}
         whileTap={{ scale: 0.92 }}
         className="fixed z-[71] bottom-5 right-5 sm:bottom-6 sm:right-6 rounded-full focus:outline-none"
         aria-label={open ? "Cerrar chat" : "Abrir chat con Rex"}
