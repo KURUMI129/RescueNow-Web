@@ -48,15 +48,12 @@ export function About() {
       <div className="grid lg:grid-cols-[1.1fr_1fr] gap-16 items-start">
         <div>
           <SectionLabel>Quiénes somos</SectionLabel>
-          <h2 className="mt-5 font-display text-4xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.05] text-balance">
-            <BlurText text="Somos" className="block" />
+          <h2 className="mt-5 font-display text-3xl sm:text-5xl md:text-6xl font-extrabold tracking-tight leading-[1.1]">
             <BlurText
-              text="el copiloto que nunca"
+              text="Somos el copiloto que nunca te falla"
               className="block"
-              delay={0.15}
             />
             <span className="block">
-              te falla{" "}
               <GradientText from="#E11D48" via="#F59E0B" to="#0EA5E9">
                 en la carretera.
               </GradientText>
