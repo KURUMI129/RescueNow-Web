@@ -19,6 +19,14 @@ type Screen = "menu" | "intro" | "play" | "paused" | "over";
 const LANES = 3;
 const RESCUE_MSGS = ["¡SOS Activado!", "¡Ficha médica enviada!", "¡Vehículo rescatado!", "¡Emergencia resuelta!", "¡Rex al rescate! 🐾"];
 
+function detectLiteMode(): boolean {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
+  const lowCores = (navigator.hardwareConcurrency ?? 8) < 4;
+  const lowDpr = (window.devicePixelRatio || 1) < 2;
+  const isMobile = window.matchMedia("(max-width: 640px)").matches;
+  return lowCores || lowDpr || isMobile;
+}
+
 /* ── Rex full-body pixel-art canvas helper ── */
 function RexFullCanvas({ size, comando }: { size: number; comando: boolean }) {
   const ref = useRef<HTMLCanvasElement>(null);
@@ -72,6 +80,20 @@ export function RescueRunner() {
   const particlesRef = useRef<ParticlePool | null>(null);
   useEffect(() => {
     particlesRef.current = new ParticlePool(80);
+  }, []);
+
+  const liteModeRef = useRef(false);
+  const bloomEnabledRef = useRef(true);
+  const [liteMode, setLiteMode] = useState(false);
+  const dtHistoryRef = useRef<number[]>([]);
+  const runtimeFpsCapRef = useRef(60);
+  useEffect(() => {
+    liteModeRef.current = detectLiteMode();
+    setLiteMode(liteModeRef.current);
+    if (liteModeRef.current) {
+      particlesRef.current?.setCap(30);
+      bloomEnabledRef.current = false;
+    }
   }, []);
 
   const [skinComandoActive, setSkinComandoActive] = useState(false);
@@ -286,6 +308,17 @@ export function RescueRunner() {
       const realDt = Math.min((timestamp - lastTime) / 1000, 0.05);
       lastTime = timestamp;
 
+      // Dynamic FPS cap: track dt history and lower cap to 45 if sustained slowness
+      const history = dtHistoryRef.current;
+      history.push(realDt);
+      if (history.length > 120) history.shift();
+      if (history.length >= 60) {
+        const avg = history.reduce((a, b) => a + b, 0) / history.length;
+        if (avg > 1 / 45 && runtimeFpsCapRef.current === 60) {
+          runtimeFpsCapRef.current = 45;
+        }
+      }
+
       // Slow-mo effect: scale dt down, decrement using real time
       let effectiveDt = realDt;
       if (slowMoRef.current > 0) {
@@ -322,7 +355,7 @@ export function RescueRunner() {
       // Begin shake transform — wraps all world drawing
       ctx.save();
       if (shakeRef.current > 0) {
-        const intensity = (shakeRef.current / 0.2) * 8;
+        const intensity = (shakeRef.current / 0.2) * (liteModeRef.current ? 4 : 8);
         ctx.translate((Math.random() - 0.5) * intensity, (Math.random() - 0.5) * intensity);
       }
 
@@ -373,15 +406,15 @@ export function RescueRunner() {
           case "pothole": drawSprite(ctx, POTHOLE, ex - 7 * s, e.y - 7 * s, s); break;
           case "cone": drawSprite(ctx, CONE, ex - 7 * s, e.y - 7 * s, s); break;
           case "shield":
-            ctx.shadowColor = "#0EA5E9"; ctx.shadowBlur = 12;
+            if (bloomEnabledRef.current) { ctx.shadowColor = "#0EA5E9"; ctx.shadowBlur = 12; }
             drawSprite(ctx, SHIELD, ex - 7 * s, e.y - 7 * s, s);
             ctx.shadowBlur = 0; break;
           case "fuel":
-            ctx.shadowColor = "#10B981"; ctx.shadowBlur = 12;
+            if (bloomEnabledRef.current) { ctx.shadowColor = "#10B981"; ctx.shadowBlur = 12; }
             drawSprite(ctx, FUEL, ex - 7 * s, e.y - 7 * s, s);
             ctx.shadowBlur = 0; break;
           case "medkit":
-            ctx.shadowColor = "#E11D48"; ctx.shadowBlur = 12;
+            if (bloomEnabledRef.current) { ctx.shadowColor = "#E11D48"; ctx.shadowBlur = 12; }
             drawSprite(ctx, MEDKIT, ex - 7 * s, e.y - 7 * s, s);
             ctx.shadowBlur = 0; break;
         }
@@ -714,7 +747,7 @@ export function RescueRunner() {
           >
             <div className="parallax-layer parallax-mountains" />
             <div className="parallax-layer parallax-city" />
-            <div className="parallax-layer parallax-rail" />
+            {!liteMode && <div className="parallax-layer parallax-rail" />}
           </div>
           <canvas ref={canvasRef} className="relative z-10" style={{ display: "block", width: "100%", height: "100%", touchAction: "none" }} />
           {/* Pause overlay */}
