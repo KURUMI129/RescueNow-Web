@@ -238,7 +238,7 @@ export function RexWidget() {
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Cerrar"
-                className="h-9 w-9 rounded-full hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition-colors"
+                className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center transition-colors"
               >
                 <X className="h-4 w-4" />
               </button>
@@ -506,7 +506,7 @@ function SupportForm({
         <button
           onClick={onClose}
           aria-label="Cerrar"
-          className="h-9 w-9 rounded-full hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center"
+          className="h-11 w-11 min-h-[44px] min-w-[44px] rounded-full hover:bg-black/5 dark:hover:bg-white/5 flex items-center justify-center"
         >
           <X className="h-4 w-4" />
         </button>
