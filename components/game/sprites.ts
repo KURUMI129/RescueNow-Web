@@ -102,6 +102,17 @@ const FRAME_HIT = mutate(IDLE, [
 
 AMBULANCE_FRAMES.push(FRAME_DRIFT_LEFT, FRAME_DRIFT_RIGHT, FRAME_HIT);
 
+// Variante Rex Comando: gorra militar negra (HCAP → BCAP, HCROSS → BCAP)
+export const AMBULANCE_FRAMES_COMANDO: string[][][] = AMBULANCE_FRAMES.map((frame) =>
+  frame.map((row) =>
+    row.map((cell) => {
+      if (cell === HCAP) return BCAP;
+      if (cell === HCROSS) return BCAP;
+      return cell;
+    }),
+  ),
+);
+
 // Backwards compat export: el frame por defecto.
 export const AMBULANCE = AMBULANCE_FRAMES[0];
 

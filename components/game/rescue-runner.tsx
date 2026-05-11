@@ -7,7 +7,7 @@ import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopB
 import { DIFFICULTIES, INTRO_LINES, type Difficulty } from "@/components/game/config";
 import { ParticlePool } from "@/components/game/effects";
 import { makeEvent, startEvent, tickEvent, resetEvent, pickEventKind, type RescueEvent } from "@/components/game/events";
-import { AMBULANCE, AMBULANCE_FRAMES, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, REX_FULL, REX_FULL_COMANDO, drawSprite } from "@/components/game/sprites";
+import { AMBULANCE, AMBULANCE_FRAMES, AMBULANCE_FRAMES_COMANDO, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, REX_FULL, REX_FULL_COMANDO, drawSprite } from "@/components/game/sprites";
 
 /* ── Types ── */
 type EntityKind = "car" | "pothole" | "cone" | "shield" | "fuel" | "medkit";
@@ -103,11 +103,21 @@ export function RescueRunner() {
     }
   }, []);
 
+  const [unlockToast, setUnlockToast] = useState(false);
+
   const [skinComandoActive, setSkinComandoActive] = useState(false);
   useEffect(() => {
     setSkinComandoActive(
       typeof window !== "undefined" &&
         window.localStorage.getItem("rexnow-skin-comando-active") === "1",
+    );
+  }, []);
+
+  const [skinUnlocked, setSkinUnlocked] = useState(false);
+  useEffect(() => {
+    setSkinUnlocked(
+      typeof window !== "undefined" &&
+        window.localStorage.getItem("rexnow-skin-comando") === "1",
     );
   }, []);
 
@@ -117,6 +127,11 @@ export function RescueRunner() {
   useEffect(() => {
     chihuahuaRef.current = chihuahuaMode;
   }, [chihuahuaMode]);
+
+  const skinComandoRef = useRef(false);
+  useEffect(() => {
+    skinComandoRef.current = skinComandoActive;
+  }, [skinComandoActive]);
 
   useEffect(() => {
     if (screen !== "menu") return;
@@ -211,6 +226,20 @@ export function RescueRunner() {
       if ((prev < 100 && score >= 100) || (prev < 200 && score >= 200) || (prev < 300 && score >= 300)) {
         slowMoRef.current = 0.8;
         flashRef.current = 0.25;
+      }
+      // Easter egg F: 300 pts en Difícil desbloquea Rex Comando
+      if (
+        diff === "hard" &&
+        score >= 300 &&
+        typeof window !== "undefined" &&
+        !window.localStorage.getItem("rexnow-skin-comando")
+      ) {
+        window.localStorage.setItem("rexnow-skin-comando", "1");
+        setUnlockToast(true);
+        if (!mutedRef.current) {
+          try { barkHappy(); } catch {}
+        }
+        setTimeout(() => setUnlockToast(false), 4000);
       }
       // Panting: between 100 and 200 pts
       if (score >= 100 && score < 200) {
@@ -558,7 +587,8 @@ export function RescueRunner() {
       if (isHit) frameIdx = 3;
       else if (lastInputDirRef.current === -1) frameIdx = 1;
       else if (lastInputDirRef.current === 1) frameIdx = 2;
-      const ambulanceFrame = AMBULANCE_FRAMES[frameIdx] ?? AMBULANCE;
+      const framesPool = skinComandoRef.current ? AMBULANCE_FRAMES_COMANDO : AMBULANCE_FRAMES;
+      const ambulanceFrame = framesPool[frameIdx] ?? framesPool[0] ?? AMBULANCE;
 
       // Step 17.1: Pulsating siren halo around the ambulance
       const sirenPhase = Math.floor(performance.now() / 250) % 2 === 0;
@@ -816,6 +846,25 @@ export function RescueRunner() {
             })}
           </div>
 
+          {skinUnlocked && screen === "menu" && (
+            <label style={{ display: "flex", alignItems: "center", gap: 8, color: "#FACC15", fontSize: 13, fontWeight: 700, marginTop: 8, cursor: "pointer" }}>
+              <input
+                type="checkbox"
+                checked={skinComandoActive}
+                onChange={(e) => {
+                  setSkinComandoActive(e.target.checked);
+                  if (typeof window !== "undefined") {
+                    window.localStorage.setItem(
+                      "rexnow-skin-comando-active",
+                      e.target.checked ? "1" : "0",
+                    );
+                  }
+                }}
+              />
+              🎖️ Usar skin Rex Comando
+            </label>
+          )}
+
           {/* Power-up & obstacle guide */}
           <div style={{
             marginTop: 6, width: "100%", maxWidth: 320,
@@ -881,6 +930,29 @@ export function RescueRunner() {
       {/* ── GAME CANVAS ── */}
       {(screen === "play" || screen === "paused") && (
         <div style={{ flex: 1, position: "relative" }}>
+          {unlockToast && (
+            <div
+              className="animate-pulse"
+              style={{
+                position: "absolute",
+                top: 100,
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 70,
+                background: "#FACC15",
+                color: "#000",
+                padding: "10px 20px",
+                borderRadius: 12,
+                fontFamily: "monospace",
+                fontWeight: 900,
+                fontSize: 14,
+                letterSpacing: 1,
+                boxShadow: "0 8px 24px rgba(250,204,21,0.7)",
+              }}
+            >
+              🏅 Skin desbloqueada: Rex Comando
+            </div>
+          )}
               {/* Chihuahua mode HUD indicator */}
           {chihuahuaMode && (
             <div style={{
