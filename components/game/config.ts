@@ -40,12 +40,12 @@ export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
     minSpawnInterval: 70,  // never faster than ~1.2s
     spawnAccelEvery: 800,  // slow acceleration
     spawnRates: {
-      car: 0.35,      // rescatable — the fun part
+      car: 0.38,      // rescatable — the fun part
       pothole: 0.12,  // few obstacles
       cone: 0.10,
-      shield: 0.18,   // generous power-ups
-      fuel: 0.13,
-      medkit: 0.12,
+      shield: 0.20,   // generous power-ups
+      fuel: 0.14,
+      medkit: 0.06,
     },
     description: "Más vidas, más power-ups y pocos obstáculos. Ideal para niños.",
   },
@@ -59,12 +59,12 @@ export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
     minSpawnInterval: 45,  // gets to ~0.75s at high scores
     spawnAccelEvery: 500,
     spawnRates: {
-      car: 0.30,
-      pothole: 0.20,
-      cone: 0.18,
+      car: 0.32,
+      pothole: 0.22,
+      cone: 0.20,
       shield: 0.12,
       fuel: 0.10,
-      medkit: 0.10,
+      medkit: 0.04,
     },
     description: "Equilibrio entre reto y diversión. El modo estándar.",
   },
@@ -79,11 +79,11 @@ export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
     spawnAccelEvery: 300,
     spawnRates: {
       car: 0.22,
-      pothole: 0.28,  // lots of obstacles
-      cone: 0.25,
-      shield: 0.10,   // rare power-ups
+      pothole: 0.30,  // lots of obstacles
+      cone: 0.27,
+      shield: 0.11,   // rare power-ups
       fuel: 0.08,
-      medkit: 0.07,
+      medkit: 0.02,
     },
     description: "Menos vidas, casi sin ayuda y velocidad alta. ¿Te atreves?",
   },
