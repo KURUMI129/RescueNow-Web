@@ -6,6 +6,7 @@ import { useEffect, useRef, useState } from "react";
 
 import { cn } from "@/lib/utils";
 import { RexAvatar } from "./rex-avatar";
+import type { RexMood } from "./rex-avatar";
 import { answer, FACTS } from "./knowledge-base";
 
 const WHATSAPP = "523521889522";
@@ -50,7 +51,16 @@ export function RexWidget() {
   const [tapCount, setTapCount] = useState(0);
   const [tapAt, setTapAt] = useState(0);
   const [cookie, setCookie] = useState(false);
+  const [mood, setMood] = useState<RexMood>("idle");
+  const [comando, setComando] = useState(false);
   const listRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setComando(
+      typeof window !== "undefined" &&
+        window.localStorage.getItem("rexnow-skin-comando-active") === "1",
+    );
+  }, []);
 
   useEffect(() => {
     if (listRef.current) {
@@ -85,6 +95,18 @@ export function RexWidget() {
     if (!clean) return;
     setMessages((m) => [...m, { id: uid(), from: "user", text: clean }]);
     setInput("");
+
+    const lower = clean.toLowerCase();
+    const triggerJump = /\babrazo|abrazame|abrázame|abracit/i.test(lower);
+    const triggerBelly = /\bpanzita|panza arriba|rascar panza|rascame|rásame/i.test(lower);
+    if (triggerJump) {
+      setMood("jump");
+      setTimeout(() => setMood("idle"), 1500);
+    } else if (triggerBelly) {
+      setMood("belly");
+      setTimeout(() => setMood("idle"), 2200);
+    }
+
     setTyping(true);
 
     const history = messages
@@ -231,7 +253,7 @@ export function RexWidget() {
         aria-label={open ? "Cerrar chat" : "Abrir chat con Rex"}
       >
         <div className="relative">
-          <RexAvatar size={64} animate={!open} />
+          <RexAvatar size={64} animate={!open} mood={mood} comando={comando} />
           {!open && (
             <span className="absolute -top-1 -right-1 h-3.5 w-3.5 rounded-full bg-brand-success ring-2 ring-white dark:ring-dark-bg" />
           )}
@@ -259,7 +281,7 @@ export function RexWidget() {
                   "linear-gradient(180deg, rgba(245,158,11,0.12), transparent)",
               }}
             >
-              <RexAvatar size={44} />
+              <RexAvatar size={44} mood={mood} comando={comando} />
               <div className="min-w-0 flex-1">
                 <div className="flex items-center gap-1.5">
                   <span className="font-display text-base font-extrabold">
@@ -294,6 +316,7 @@ export function RexWidget() {
                     text={m.text}
                     suggestions={m.suggestions}
                     onPick={(s) => send(s)}
+                    comando={comando}
                   />
                 ) : m.from === "user" ? (
                   <UserBubble key={m.id} text={m.text} />
@@ -310,7 +333,7 @@ export function RexWidget() {
                 ),
               )}
 
-              {typing && <TypingBubble />}
+              {typing && <TypingBubble comando={comando} />}
             </div>
 
             <form
@@ -347,6 +370,7 @@ export function RexWidget() {
                       { id: uid(), from: "system", kind: "form-sent" },
                     ]);
                   }}
+                  comando={comando}
                 />
               )}
             </AnimatePresence>
@@ -361,14 +385,16 @@ function RexBubble({
   text,
   suggestions,
   onPick,
+  comando = false,
 }: {
   text: string;
   suggestions?: string[];
   onPick: (s: string) => void;
+  comando?: boolean;
 }) {
   return (
     <div className="flex items-start gap-2.5">
-      <RexAvatar size={30} />
+      <RexAvatar size={30} comando={comando} />
       <div className="flex-1 min-w-0">
         <div className="inline-block max-w-full rounded-2xl rounded-tl-sm bg-black/5 dark:bg-white/5 px-4 py-2.5 whitespace-pre-wrap">
           <FormattedText text={text} />
@@ -401,10 +427,10 @@ function UserBubble({ text }: { text: string }) {
   );
 }
 
-function TypingBubble() {
+function TypingBubble({ comando = false }: { comando?: boolean }) {
   return (
     <div className="flex items-start gap-2.5">
-      <RexAvatar size={30} />
+      <RexAvatar size={30} comando={comando} />
       <div className="rounded-2xl rounded-tl-sm bg-black/5 dark:bg-white/5 px-4 py-3 flex items-center gap-1.5">
         <span className="h-1.5 w-1.5 rounded-full bg-light-muted dark:bg-dark-muted animate-bounce" />
         <span
@@ -489,9 +515,11 @@ function FormattedText({ text }: { text: string }) {
 function SupportForm({
   onClose,
   onSent,
+  comando = false,
 }: {
   onClose: () => void;
   onSent: () => void;
+  comando?: boolean;
 }) {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
@@ -533,7 +561,7 @@ function SupportForm({
       )}
     >
       <div className="flex items-center gap-3 px-4 py-3 border-b border-light-border dark:border-dark-border">
-        <RexAvatar size={40} />
+        <RexAvatar size={40} comando={comando} />
         <div className="flex-1">
           <div className="font-display text-base font-extrabold">
             Componer correo
