@@ -616,6 +616,42 @@ export function RescueRunner() {
         ctx.restore();
       }
 
+      // Pile-up event overlay (luces de patrulla pulsantes encima)
+      if (eventRef.current.kind === "pileup" && eventRef.current.state === "active") {
+        const tNow = performance.now();
+        const sirenOn = Math.floor(tNow / 250) % 2 === 0;
+        // Patrulla con luces alternantes en la parte superior
+        const patrolY = 40;
+        ctx.fillStyle = sirenOn ? "#E11D48" : "#0EA5E9";
+        ctx.fillRect(w / 2 - 30, patrolY, 20, 8);
+        ctx.fillRect(w / 2 + 10, patrolY, 20, 8);
+        // Glow ambiente del patrullaje
+        const pileupGrad = ctx.createRadialGradient(w / 2, patrolY + 4, 4, w / 2, patrolY + 4, 200);
+        pileupGrad.addColorStop(0, sirenOn ? "rgba(225,29,72,0.4)" : "rgba(14,165,233,0.4)");
+        pileupGrad.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = pileupGrad;
+        ctx.fillRect(0, 0, w, 200);
+      }
+
+      // Blackout event: pantalla casi negra excepto cono de luz alrededor del jugador
+      if (eventRef.current.kind === "blackout" && eventRef.current.state === "active") {
+        const playerCx = laneX(lane);
+        const playerCy = H() - 80;
+        ctx.save();
+        // Capa negra
+        ctx.fillStyle = "rgba(0,0,0,0.92)";
+        ctx.fillRect(0, 0, w, h);
+        // Recortar con composite operation para hacer "agujero" alrededor del jugador
+        ctx.globalCompositeOperation = "destination-out";
+        const radius = 140;
+        const blackoutGrad = ctx.createRadialGradient(playerCx, playerCy - 40, 10, playerCx, playerCy - 40, radius);
+        blackoutGrad.addColorStop(0, "rgba(0,0,0,1)");
+        blackoutGrad.addColorStop(1, "rgba(0,0,0,0)");
+        ctx.fillStyle = blackoutGrad;
+        ctx.fillRect(0, 0, w, h);
+        ctx.restore();
+      }
+
       // White flash overlay (not shaken, drawn over world but under HUD)
       if (flashRef.current > 0) {
         ctx.fillStyle = `rgba(255,255,255,${flashRef.current / 0.25})`;
@@ -837,6 +873,54 @@ export function RescueRunner() {
               }}
             >
               🌪️ TORNADO · {eventRef.current.carsRescued}/{eventRef.current.carsNeeded}
+            </div>
+          )}
+          {eventRef.current.state === "active" && eventRef.current.kind === "pileup" && (
+            <div
+              key={`event-pileup-${eventTick}`}
+              style={{
+                position: "absolute",
+                top: 60,
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 60,
+                background: "rgba(14,165,233,0.92)",
+                color: "#fff",
+                padding: "8px 16px",
+                borderRadius: 999,
+                fontFamily: "monospace",
+                fontWeight: 900,
+                fontSize: 13,
+                letterSpacing: 1,
+                pointerEvents: "none",
+                boxShadow: "0 4px 16px rgba(14,165,233,0.5)",
+              }}
+            >
+              🚗💥 PILE-UP · {eventRef.current.carsRescued}/{eventRef.current.carsNeeded}
+            </div>
+          )}
+          {eventRef.current.state === "active" && eventRef.current.kind === "blackout" && (
+            <div
+              key={`event-blackout-${eventTick}`}
+              style={{
+                position: "absolute",
+                top: 60,
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 60,
+                background: "rgba(30,41,59,0.92)",
+                color: "#fff",
+                padding: "8px 16px",
+                borderRadius: 999,
+                fontFamily: "monospace",
+                fontWeight: 900,
+                fontSize: 13,
+                letterSpacing: 1,
+                pointerEvents: "none",
+                boxShadow: "0 4px 16px rgba(30,41,59,0.7)",
+              }}
+            >
+              🌑 APAGÓN · {eventRef.current.carsRescued}/{eventRef.current.carsNeeded}
             </div>
           )}
           <div
