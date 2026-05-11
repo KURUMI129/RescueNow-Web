@@ -15,31 +15,50 @@ const R = "#E11D48";  // red
 const C = "#c00";     // body outline
 const G = "#ddd";     // gray stripe
 const BL = "#0EA5E9"; // blue cross
+const K = "#D4A373";  // tan San Bernardo
+const HCAP = "#E11D48"; // gorra roja rescate
+const HCROSS = "#fff"; // cruz blanca
+const BCAP = "#1f2937"; // gorra negra comando (Rex Comando)
+const TACT = "#374151"; // cintillo táctico
 
-export const AMBULANCE: string[][] = [
-  ["","","","","","","",C,C,C,C,"","","","","","",""],
-  ["","","","","","",C,R,R,R,R,C,"","","","","",""],
-  ["","","","","",C,R,R,W,W,R,R,C,"","","","",""],
-  ["","","","","",C,W,D,"",D,"",D,W,C,"","","",""],
-  ["","","","","",C,W,D,D,"","",D,D,C,"","","",""],
-  ["","","","",C,W,W,B,B,B,B,B,B,W,C,"","",""],
-  ["","","","",C,W,B,N,"",B,B,"",N,W,C,"","",""],
-  ["","","","",C,W,B,B,B,N,B,B,B,W,C,"","",""],
-  ["","","","",C,W,B,B,P,P,P,B,B,W,C,"","",""],
-  ["","","","",C,G,G,G,G,G,G,G,G,G,C,"","",""],
-  ["","","","",C,W,W,W,BL,W,W,W,W,W,C,"","",""],
-  ["","","","",C,W,W,BL,BL,BL,W,W,W,W,C,"","",""],
-  ["","","","",C,W,W,W,BL,W,W,W,W,W,C,"","",""],
-  ["","","#333",C,W,W,W,W,W,W,W,W,W,W,C,"#333","",""],
-  ["","","#333",C,W,W,W,W,W,W,W,W,W,W,C,"#333","",""],
-  ["","","","",C,W,W,W,W,W,W,W,W,W,C,"","",""],
-  ["","","","",C,W,W,W,W,W,W,W,W,W,C,"","",""],
-  ["","","","",C,G,G,G,G,G,G,G,G,G,C,"","",""],
-  ["","","#333",C,W,W,W,W,W,W,W,W,W,W,C,"#333","",""],
-  ["","","","",C,R,R,W,W,W,W,W,R,R,C,"","",""],
-  ["","","","",C,C,C,C,C,C,C,C,C,C,C,"","",""],
-  ["","","","","","#FFD700","#FFD700","","","","","#FFD700","#FFD700","","","","",""],
+// Frame idle del Rex San Bernardo al volante. 24 cols × 28 rows.
+// Cara blanca, manchas tan, orejas largas caídas, hocico marcado, gorra roja con cruz.
+export const AMBULANCE_FRAMES: string[][][] = [
+  // ====== FRAME 0 · IDLE ======
+  [
+    ["","","","","","","","","","",C,C,C,C,"","","","","","","","","",""],
+    ["","","","","","","","","",C,R,R,R,R,R,C,"","","","","","","",""],
+    ["","","","","","","","",C,R,R,W,W,W,W,R,R,C,"","","","","",""],
+    ["","","","","","","",C,R,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,R,C,"","","","",""],
+    ["","","","","","","",C,W,HCAP,HCAP,HCROSS,HCROSS,HCAP,HCAP,HCROSS,HCROSS,HCAP,HCAP,W,C,"","",""],
+    ["","","","","","","",C,W,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,HCAP,W,C,"","",""],
+    ["","","","","","","",C,W,K,W,W,W,W,W,W,W,W,K,W,C,"","",""],
+    ["","","","","","","",C,W,K,W,K,W,W,W,W,K,W,K,W,C,"","",""],
+    ["","","","","","","",C,W,K,K,K,N,W,W,N,K,K,K,W,C,"","",""],
+    ["","","","","","","",C,W,W,K,W,W,N,N,W,W,K,W,W,C,"","",""],
+    ["","","","","","","",C,W,W,W,W,P,P,P,P,W,W,W,W,C,"","",""],
+    ["","","","","","",C,W,W,W,K,K,K,K,K,K,K,K,W,W,W,C,"",""],
+    ["","","","","","",C,W,W,W,K,K,K,K,K,K,K,K,W,W,W,C,"",""],
+    ["","","","","","",C,G,G,G,G,G,G,G,G,G,G,G,G,G,G,C,"",""],
+    ["","","","","","",C,W,W,W,W,BL,BL,W,W,W,W,W,W,W,W,C,"",""],
+    ["","","","","","",C,W,W,W,BL,BL,BL,BL,W,W,W,W,W,W,W,C,"",""],
+    ["","","","","","",C,W,W,W,W,BL,BL,W,W,W,W,W,W,W,W,C,"",""],
+    ["","","","","","",C,W,W,W,W,W,W,W,W,W,W,W,W,W,W,C,"",""],
+    ["","","","#333",C,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,C,"#333",""],
+    ["","","","#333",C,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,C,"#333",""],
+    ["","","","","",C,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,C,"",""],
+    ["","","","","",C,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,C,"",""],
+    ["","","","","",C,G,G,G,G,G,G,G,G,G,G,G,G,G,G,G,C,"",""],
+    ["","","","#333",C,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,W,C,"#333",""],
+    ["","","","","",C,R,R,W,W,W,W,W,W,W,W,W,W,W,R,R,C,"",""],
+    ["","","","","",C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,C,"",""],
+    ["","","","","","#FFD700","#FFD700","","","","","","","","","","","","","#FFD700","#FFD700","","",""],
+    ["","","","","","","","","","","","","","","","","","","","","","","",""],
+  ],
 ];
+
+// Backwards compat export: el frame por defecto.
+export const AMBULANCE = AMBULANCE_FRAMES[0];
 
 // 18×18 stranded car (yellow sedan with hazard lights blinking)
 export const CAR_STRANDED: string[][] = [
