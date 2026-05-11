@@ -1,0 +1,14 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(npx tsc *)",
+      "Bash(git show *)",
+      "Read(//tmp/**)",
+      "Bash(git commit *)",
+      "Bash(node -e \"const mod = require\\('./components/game/sprites.ts'\\); console.log\\('AMBULANCE_FRAMES.length:', mod.AMBULANCE_FRAMES.length\\);\")",
+      "Bash(node -e ' *)"
+    ]
+  }
+}
