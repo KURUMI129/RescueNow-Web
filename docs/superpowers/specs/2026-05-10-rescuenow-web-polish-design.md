@@ -7,9 +7,9 @@
 
 Cinco frentes simultáneos, todos en la web:
 
-1. **Polish cinematográfico del juego** "Rex al Rescate" (`components/game/`).
-2. **Rediseño del sprite de Rex** para que parezca un San Bernardo rescatista y no Freddy Fazbear.
-3. **Personalidad perruna del chatbot** (reglas, IA y burbujas proactivas).
+1. **Polish cinematográfico del juego** "Rex al Rescate" (`components/game/`) + eventos de rescate (tornado, pile-up, apagón) + voz de Rex (ladridos procedurales) + 2 easter eggs.
+2. **Rediseño del sprite de Rex** (San Bernardo rescatista, no Freddy) + skin desbloqueable "Rex Comando".
+3. **Personalidad perruna del chatbot** (reglas, IA, burbujas) + 4 easter eggs en el chat + pistas sobre easter eggs.
 4. **Tres bugs móviles confirmados**: texto "Somos el copiloto" se come "el", CountUp se queda en 0, botón de centrar mapa tapado por el chatbot.
 5. **Audit móvil** estructurado en 375px y 414px sobre el resto de secciones.
 
@@ -43,7 +43,27 @@ Cinco frentes simultáneos, todos en la web:
 
 ### Intro animada estilo Capcom
 
-- Al pulsar "Comenzar", el título "REX AL RESCATE" entra deslizando con flash blanco; luego un "🐕 PUSH START" parpadea. ~2s totales.
+- Al pulsar "Comenzar", el título "REX AL RESCATE" entra deslizando con flash blanco; luego un "🐕 PUSH START" parpadea. ~2s totales. Rex ladra una vez al aparecer el "PUSH START".
+
+### Voz de Rex (ladridos procedurales)
+
+Todos generados con Web Audio (igual que el resto del audio del juego). Cero archivos externos. Suben al módulo `components/game/audio.ts`:
+
+- **`barkHappy`** — ladrido corto agudo "¡Guau!" al rescatar carro. Oscilador triangle + envelope rápido + pitch sweep ascendente.
+- **`barkAlert`** — "¡Wuf!" más corto al recoger power-up.
+- **`whineSad`** — "Auuuu..." descendente al perder vida; versión larga al game-over. Sawtooth + envelope lento + pitch sweep descendente.
+- **`pantingExcited`** — jadeo rítmico bajito de fondo entre 100 y 200 pts (cuando "todo va bien"). Loop discreto.
+- **`barkIntro`** — un ladrido al aparecer "PUSH START" en la intro.
+
+### Eventos de rescate (encajan con el tema de la app, no son "bosses" tradicionales)
+
+Cada ~100 pts entra un evento aleatorio entre los tres siguientes. Duran 15–20s. Si se completan, bonus de score; si fallan, pierdes 1 vida pero el juego continúa.
+
+- **Tornado** 🌪️ — la pantalla se oscurece, viento cruzado empuja la ambulancia hacia un lado, aparecen 3–4 carros varados muy cerca entre sí. Misión: rescatar todos antes de que pase el tornado. No "se le pega" al tornado, sólo se sobrevive cruzándolo.
+- **Choque múltiple (pile-up)** 🚗💥 — patrulla por delante con sirena, 5 vehículos varados en cadena. Misión: rescatar 4 de 5 sin chocar con los restos. Dos colisiones = falla el evento.
+- **Apagón nocturno** 🌑 — la pantalla se oscurece casi por completo, sólo iluminan los faros de Rex (cono de luz). Aparecen 3 "medkits de heridos" para atender mientras esquivas obstáculos casi invisibles.
+
+Implementación: nuevo módulo `components/game/events.ts` con una máquina de estados (`idle | active | succeeded | failed`). El sistema de spawn normal se pausa durante el evento.
 
 ### Adaptación a móvil / dispositivos modestos
 
@@ -53,6 +73,16 @@ Cinco frentes simultáneos, todos en la web:
 - **Cap de FPS a 45** en móvil si detectamos caída sostenida del `dt` real vs target durante >2s.
 - **Sprite virtual**: el render se sigue haciendo en unidades virtuales, así que aumentar el sprite no consume área de juego.
 - **Controles táctiles** no cambian. La zona de tap se mantiene.
+
+### Easter eggs dentro del juego
+
+- **Easter egg C · Konami code** — secuencia `↑↑↓↓←→←→BA` (B y A se mapean a `Z` y `X` o cualquier letra similar en PC; en móvil, 4 taps en esquinas alternadas) en la pantalla de inicio del juego, antes de pulsar "Comenzar". Activa **Modo Chihuahua**:
+  - Sprite de ambulancia escalado al 70%.
+  - Velocidad base × 1.8.
+  - Score multiplicado × 2.
+  - Indicador visual "🐕 MODO CHIHUAHUA" en HUD.
+  - Sólo dura esa partida.
+- **Easter egg F · Rex Comando** — al alcanzar 300 pts en Difícil, desbloquea la skin descrita en Sección 2 (gorra militar negra + cintillo táctico). Persistido en `localStorage` con key `rexnow-skin-comando`. Aparece notificación in-game "🏅 Skin desbloqueada: Rex Comando" y al siguiente menú de inicio, toggle para activarla.
 
 ### Balance de spawn rates (`components/game/config.ts`)
 
@@ -71,8 +101,8 @@ Antes: medkit 12 / 10 / 7 %.
 
 ### Stretch goals (NO en este alcance)
 
-- Boss fight (tornado o camión gigante) cada 100 pts.
-- Shaders WebGL avanzados (refracción real).
+- Shaders WebGL avanzados (refracción real, HDR fuerte).
+- Modo multijugador / leaderboard global.
 
 ---
 
@@ -95,6 +125,10 @@ Antes: medkit 12 / 10 / 7 %.
 
 - Para pantalla de inicio y game-over: Rex sentado con gorra, pata levantada saludando.
 - Reusable en el chatbot: `RexAvatar` lo usa al tamaño actual (64px en burbuja, 30-44px en chat).
+
+### Variante "Rex Comando" (skin desbloqueable — easter egg F)
+
+- Misma silueta del sprite normal, pero con **gorra militar negra** en lugar de roja y un cintillo táctico cruzando el pecho. Se activa al alcanzar 300 pts en Difícil (persistido en `localStorage`). Una vez desbloqueada, queda disponible para todas las partidas futuras.
 
 ### Lo que NO cambia
 
@@ -133,17 +167,50 @@ Antes: medkit 12 / 10 / 7 %.
 
 ### 3C · Burbujas proactivas FACTS (`components/chatbot/knowledge-base.ts`)
 
-- Hoy son 9, suben a **13** mezclando 4 sobre el juego:
+- Hoy son 9, suben a **15** mezclando 4 sobre el juego y 2 que pican curiosidad sobre easter eggs:
   - `"¿Ya jugaste Rex al Rescate? 🐕🚑"`
   - `"En el juego escondo easter eggs 🤫"`
   - `"Reto: rescata 10 carros sin chocar 🏆"`
   - `"¿Modo Difícil? Cuidado con mis baches 🕳️"`
+  - `"Un código clásico de NES desbloquea algo en el juego... 🎮"`
+  - `"¿Has intentado rascarme la panza? 🐾"`
 - Se suaviza redacción de las existentes para acordar con el nuevo tono perruno (ej. "¿Tienes una duda? Clic en mi icono..." → "¿Dudas? Píllame con un clic, te escucho con la oreja parada 👂").
+
+### 3D · Mensaje inicial y sugerencias por defecto
+
+- El mensaje de bienvenida en `rex-widget.tsx` (constante `INITIAL`) cambia sus sugerencias a incluir el juego y un pique a easter eggs:
+  - `"¿Cómo se juega Rex al Rescate?"`
+  - `"¿Qué incluye el Premium?"`
+  - `"¿Tienes easter eggs?"`
+
+### 3E · Easter eggs en el chatbot
+
+Cuatro nuevos easter eggs, todos en `knowledge-base.ts` salvo el D que toca `rex-widget.tsx`:
+
+- **Easter egg A · "Abrazo"** — keywords `["abrazo", "abrazame", "abrázame", "abracitos"]`.
+  - Respuesta: `"*te abraza con sus patotas* 🐶💛 Aquí estoy, wuf wuf."`
+  - El avatar de Rex en el widget hace un saltito + un corazoncito flota arriba ~1.5s (animación CSS controlada desde el componente al detectar el match).
+
+- **Easter egg B · "Panzita"** — keywords `["panzita", "panza", "rascar panza", "rascame", "rásame"]`.
+  - Respuesta: `"*se voltea de panza pidiendo caricias* 🐕 Auf~ qué rico..."`
+  - El avatar rota 180° y queda "panza arriba" ~2s.
+
+- **Easter egg D · "7 taps al avatar"** — en `rex-widget.tsx`, contador de clicks sobre el botón flotante cuando NO está abierto el chat. Al llegar a 7 dentro de ~3s:
+  - Una galleta 🍪 cae desde arriba con CSS, Rex la atrapa al vuelo (animación de cabeza arriba), un FX `barkHappy` (reusable desde audio del juego) y la galleta desaparece. ~1.5s.
+  - Counter se resetea automáticamente.
+
+- **Easter egg E · "Aullar / lobo / 11pm"** — keywords `["lobo", "aullar", "aullido", "auuu"]` O bien si la hora local del cliente es entre 23:00 y 04:59, una variante del saludo inicial.
+  - Respuesta: `"Aaaaa-uuuuuuuu... 🌙 *mira a la luna*"`
+  - Si es por horario, el saludo añade `"Hoy ando trasnochando como buen perro lobo... 🌙"` antes del mensaje normal.
+
+- **Pista sobre easter eggs** — nueva regla con keywords `["easter egg", "easter eggs", "secreto", "secretos", "sorpresa", "sorpresas"]`:
+  - Respuesta: `"¡Guau guau! 🤫 Sí escondo algunas sorpresitas, pero descubrirlas es parte del juego. Te doy una pista: a los perros nos gustan los abrazos, las caricias en la panza, y a la luna le aullamos 🐾"`
+  - Sugerencias rotativas: `["¿Hay easter eggs en el juego?", "Más pistas porfa"]`.
+- Una regla complementaria para `["pistas", "más pistas", "easter eggs en el juego"]` que sugiere probar códigos clásicos en el menú del juego y jugar Difícil sin dar la respuesta directa.
 
 ### Fuera de alcance
 
-- Voz/TTS para Rex.
-- Easter eggs adicionales (sólo "emparrunamos" los 2 existentes).
+- Voz/TTS humano para Rex (sólo ladridos procedurales dentro del juego).
 
 ---
 
@@ -222,15 +289,15 @@ Las cinco secciones son mayormente independientes, pero hay un orden razonable:
 
 ## Criterios de éxito
 
-- En PC: el juego se siente cinematográfico, Rex se reconoce como San Bernardo a primera vista, el chatbot mete "Guau" sin saturar y los easter eggs son perrunos.
-- En móvil (375px y 414px): "Somos el copiloto..." se ve completo, el contador llega a 8+, el botón de centrar mapa es accesible sin tapar nada, el juego corre fluido sin sobrecalentar.
+- En PC: el juego se siente cinematográfico, Rex se reconoce como San Bernardo a primera vista, ladra al rescatar/perder vida, los eventos de rescate aparecen sin sentirse forzados, el chatbot mete "Guau" sin saturar y los easter eggs (en juego y chat) son perrunos y descubribles.
+- En móvil (375px y 414px): "Somos el copiloto..." se ve completo, el contador llega a 8+, el botón de centrar mapa es accesible sin tapar nada, el juego corre fluido sin sobrecalentar, los easter eggs táctiles (7 taps al avatar, taps alternados en lugar del Konami) funcionan.
 - Sin regresiones en el flujo principal (SOS, mapa, planes, contacto).
+- Los easter eggs no se descubren por accidente en uso normal (Konami requiere intención; "abrazo"/"panzita" son palabras que un usuario sólo escribiría si sospecha).
 
 ## Fuera de alcance
 
 - Cualquier cambio a la app móvil (Expo / iOS / Android).
 - Refactor de la base CSS o paleta de marca.
-- Boss fights en el juego.
-- Sistema de logros/leaderboard.
-- TTS o voz para Rex.
-- Nuevos easter eggs además de los dos existentes.
+- Sistema de logros/leaderboard global o multijugador.
+- TTS humano para Rex (sólo ladridos procedurales en el juego).
+- Shaders WebGL avanzados.
