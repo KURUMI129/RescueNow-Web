@@ -6,6 +6,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM, updateBGMTier, sfxVictoryJingle, barkHappy, barkAlert, whineSad, startPanting, stopPanting, barkIntro } from "@/components/game/audio";
 import { DIFFICULTIES, INTRO_LINES, type Difficulty } from "@/components/game/config";
 import { ParticlePool } from "@/components/game/effects";
+import { makeEvent, startEvent, tickEvent, resetEvent, pickEventKind, type RescueEvent } from "@/components/game/events";
 import { AMBULANCE, AMBULANCE_FRAMES, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, REX_FULL, REX_FULL_COMANDO, drawSprite } from "@/components/game/sprites";
 
 /* ── Types ── */
@@ -76,6 +77,10 @@ export function RescueRunner() {
   const slowMoRef = useRef(0);  // time remaining for slow-mo (seconds)
   const flashRef = useRef(0);   // time remaining for white flash (seconds)
   const cycleStartRef = useRef<number>(performance.now());
+
+  const eventRef = useRef<RescueEvent>(makeEvent());
+  const lastEventScoreRef = useRef<number>(0);
+  const [eventTick, setEventTick] = useState(0);
 
   const particlesRef = useRef<ParticlePool | null>(null);
   useEffect(() => {
@@ -335,6 +340,49 @@ export function RescueRunner() {
       speed = cfg.baseSpeed + Math.floor(score / 500) * cfg.speedInc;
       roadOffset = (roadOffset + speed) % 35;
 
+      // ── Event system ──
+      // Fire event when score crosses next multiple of ~100 and currently idle
+      if (score >= lastEventScoreRef.current + 100 && eventRef.current.state === "idle") {
+        startEvent(eventRef.current, pickEventKind(), performance.now());
+        lastEventScoreRef.current = score;
+      }
+      // Tick event state machine every frame
+      tickEvent(eventRef.current, performance.now());
+      // Resolve event outcomes
+      if (eventRef.current.state === "succeeded") {
+        addScore(50);
+        toasts.push({ text: "¡Evento superado! +50", color: "#FFD700", y: h / 2, ttl: 80 });
+        resetEvent(eventRef.current);
+        setEventTick((n) => n + 1);
+      }
+      if (eventRef.current.state === "failed") {
+        // Decrement a life directly, same logic as pothole/cone hit
+        if (invincibleTimer <= 0) {
+          lives--;
+          invincibleTimer = 90;
+          lastHitAtRef.current = Date.now();
+          spawnParticles(laneX(lane), H() - 80, "#E11D48", 12);
+          shakeRef.current = 0.2;
+          if (!mutedRef.current) {
+            sfxHit();
+            whineSad(false);
+          }
+          if (lives <= 0) {
+            running = false;
+            if (!mutedRef.current) { sfxGameOver(); whineSad(true); stopPanting(); }
+            stopBGM(); setFinalScore(score);
+            if (score > highScore) { setHighScore(score); localStorage.setItem(hsKey(diff), String(score)); }
+            setScreen("over"); cleanup(); return;
+          }
+        }
+        resetEvent(eventRef.current);
+        setEventTick((n) => n + 1);
+      }
+      // HUD refresh pulse every ~200 ms while event active
+      if (eventRef.current.state === "active" && frame % 12 === 0) {
+        setEventTick((n) => n + 1);
+      }
+
       // Day/night cycle: 45s period
       const cycleElapsed = (performance.now() - cycleStartRef.current) / 1000;
       const cyclePos = (cycleElapsed % 45) / 45; // 0..1 every 45s
@@ -423,6 +471,10 @@ export function RescueRunner() {
           switch (e.kind) {
             case "car":
               addScore(100);
+              if (eventRef.current.state === "active") {
+                eventRef.current.carsRescued++;
+                setEventTick((n) => n + 1);
+              }
               particlesRef.current?.spawn("spark", ex, e.y, 12);
               toasts.push({ text: RESCUE_MSGS[Math.floor(Math.random() * RESCUE_MSGS.length)], color: "#10B981", y: py - 40, ttl: 60 });
               if (!mutedRef.current) {
@@ -542,6 +594,27 @@ export function RescueRunner() {
 
       // End shake transform — restore before flash so flash is stable
       ctx.restore();
+
+      // Tornado event overlay (over world, under HUD)
+      if (eventRef.current.kind === "tornado" && eventRef.current.state === "active") {
+        ctx.fillStyle = "rgba(0,0,0,0.35)";
+        ctx.fillRect(0, 0, w, h);
+        ctx.save();
+        ctx.translate(w / 2, h / 2);
+        ctx.strokeStyle = "rgba(148,163,184,0.7)";
+        ctx.lineWidth = 6;
+        ctx.beginPath();
+        const tNow = performance.now();
+        for (let a = 0; a < Math.PI * 6; a += 0.1) {
+          const r = 8 + a * 8;
+          const tx = Math.cos(a + tNow / 100) * r;
+          const ty = Math.sin(a + tNow / 100) * r;
+          if (a === 0) ctx.moveTo(tx, ty);
+          else ctx.lineTo(tx, ty);
+        }
+        ctx.stroke();
+        ctx.restore();
+      }
 
       // White flash overlay (not shaken, drawn over world but under HUD)
       if (flashRef.current > 0) {
@@ -741,6 +814,31 @@ export function RescueRunner() {
       {/* ── GAME CANVAS ── */}
       {(screen === "play" || screen === "paused") && (
         <div style={{ flex: 1, position: "relative" }}>
+          {/* Event HUD banner */}
+          {eventRef.current.state === "active" && eventRef.current.kind === "tornado" && (
+            <div
+              key={`event-${eventTick}`}
+              style={{
+                position: "absolute",
+                top: 60,
+                left: "50%",
+                transform: "translateX(-50%)",
+                zIndex: 60,
+                background: "rgba(225,29,72,0.92)",
+                color: "#fff",
+                padding: "8px 16px",
+                borderRadius: 999,
+                fontFamily: "monospace",
+                fontWeight: 900,
+                fontSize: 13,
+                letterSpacing: 1,
+                pointerEvents: "none",
+                boxShadow: "0 4px 16px rgba(225,29,72,0.5)",
+              }}
+            >
+              🌪️ TORNADO · {eventRef.current.carsRescued}/{eventRef.current.carsNeeded}
+            </div>
+          )}
           <div
             className="absolute inset-0 pointer-events-none z-0 overflow-hidden"
             aria-hidden
