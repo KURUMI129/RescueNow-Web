@@ -29,28 +29,38 @@ export function isOutOfScope(text: string): boolean {
 }
 
 const RULES: Rule[] = [
+  // ── Saludo con variante nocturna ─────────────────────────────────────────
   {
     keywords: ["hola", "buenas", "hi", "hello", "saludos", "qué tal", "que tal"],
-    reply: () => ({
-      text: "¡Guau! 🐕 Soy Rex, el asistente de RescueNow. Puedo ayudarte con dudas sobre la app, los planes, funciones o contactar a soporte. ¿En qué te echo una pata?",
-      suggestions: [
-        "¿Qué incluye el Premium?",
-        "¿Cómo descargo la app?",
-        "¿Funciona sin internet?",
-      ],
-    }),
+    reply: () => {
+      const hour = new Date().getHours();
+      const nightly = hour >= 23 || hour < 5;
+      const intro = nightly
+        ? "Aaaa-uuuuuuu... 🌙 Hoy ando trasnochando como buen perro lobo. ¡Guau! "
+        : "¡Guau! 🐕 ";
+      return {
+        text: `${intro}Soy Rex, el asistente de RescueNow. Puedo ayudarte con dudas sobre la app, los planes, funciones o contactar a soporte. ¿En qué te echo una pata?`,
+        suggestions: [
+          "¿Qué incluye el Premium?",
+          "¿Cómo descargo la app?",
+          "¿Tienes easter eggs?",
+        ],
+      };
+    },
   },
+
+  // ── Planes ───────────────────────────────────────────────────────────────
   {
     keywords: ["premium", "paga", "pagado", "vip"],
     reply: () => ({
-      text: "El plan Premium cuesta **$89 MXN al mes** y añade sobre el Free:\n\n• IA sin límites con respuestas detalladas\n• Diagnóstico mecánico paso a paso\n• Asesoría ante choques y seguros\n• Primeros auxilios guiados\n• Soporte prioritario\n\nPuedes cancelar cuando quieras desde la app. 🐾",
+      text: "¡Guau! El plan Premium cuesta **$89 MXN al mes** y añade sobre el Free:\n\n• IA sin límites con respuestas detalladas\n• Diagnóstico mecánico paso a paso\n• Asesoría ante choques y seguros\n• Primeros auxilios guiados\n• Soporte prioritario\n\nPuedes cancelar cuando quieras desde la app. 🐾",
       suggestions: ["¿Qué incluye el Free?", "¿Cómo cancelo?", "Descargar la app"],
     }),
   },
   {
     keywords: ["free", "gratis", "gratuito", "gratuita", "básico", "basico"],
     reply: () => ({
-      text: "El plan Free es **gratis para siempre** e incluye:\n\n• Botón SOS con cuenta regresiva\n• Detección automática de choques\n• Mapa en tiempo real con 8 servicios\n• Ficha médica offline\n• Tips básicos y llamada al 911\n\nPerfecto para arrancar sin pagar nada. ¿Quieres más? El Premium te destrampa la IA.",
+      text: "El plan Free es **gratis para siempre** y huele a libertad 🐾. Incluye:\n\n• Botón SOS con cuenta regresiva\n• Detección automática de choques\n• Mapa en tiempo real con 8 servicios\n• Ficha médica offline\n• Tips básicos y llamada al 911\n\nPerfecto para arrancar sin pagar nada. ¿Quieres más? El Premium te destrampa la IA.",
       suggestions: ["¿Qué agrega el Premium?", "Descargar la app"],
     }),
   },
@@ -61,6 +71,8 @@ const RULES: Rule[] = [
       suggestions: ["Diferencias Free vs Premium", "¿Cómo pago?"],
     }),
   },
+
+  // ── Funciones ────────────────────────────────────────────────────────────
   {
     keywords: [
       "internet",
@@ -72,7 +84,7 @@ const RULES: Rule[] = [
       "sin datos",
     ],
     reply: () => ({
-      text: "Varias funciones críticas **sí funcionan sin internet**: la ficha médica S.O.S., el botón SOS con llamada al 911 y tus datos básicos. El mapa y la búsqueda de servicios necesitan conexión para actualizarse.",
+      text: "¡Olfateo bien tu duda! Varias funciones críticas **sí funcionan sin internet**: la ficha médica S.O.S., el botón SOS con llamada al 911 y tus datos básicos. El mapa y la búsqueda de servicios necesitan conexión para actualizarse.",
       suggestions: ["¿Qué es la ficha S.O.S.?", "¿Cómo se activa el SOS?"],
     }),
   },
@@ -85,14 +97,14 @@ const RULES: Rule[] = [
       "alergias",
     ],
     reply: () => ({
-      text: "La **Ficha Médica S.O.S.** guarda tu tipo de sangre, alergias, condiciones y contacto de confianza. Está disponible incluso sin internet y los paramédicos pueden leerla desde la pantalla bloqueada cuando activas el SOS. Los datos se quedan en tu dispositivo, no los compartimos con nadie. 🏥",
+      text: "La **Ficha Médica S.O.S.** la cuidamos con patota fuerte 🐾. Guarda tu tipo de sangre, alergias, condiciones y contacto de confianza. Está disponible incluso sin internet y los paramédicos pueden leerla desde la pantalla bloqueada cuando activas el SOS. Los datos se quedan en tu dispositivo, no los compartimos con nadie. 🏥",
       suggestions: ["¿Qué pasa en un choque?", "¿Es privado?"],
     }),
   },
   {
     keywords: ["choque", "accidente", "impacto", "colisión", "colision", "acelerómetro"],
     reply: () => ({
-      text: "La app **detecta choques automáticamente** usando el acelerómetro. Si registra un impacto mayor a 4G, aparece una pantalla preguntando si estás bien. Si no respondes en 10 segundos, envía tu ubicación y ficha médica al 911 y a tu contacto de confianza. Nada se escapa. 🚨",
+      text: "¡Wuf! La app **detecta choques automáticamente** usando el acelerómetro. Si registra un impacto mayor a 4G, aparece una pantalla preguntando si estás bien. Si no respondes en 10 segundos, envía tu ubicación y ficha médica al 911 y a tu contacto de confianza. Nada se escapa. 🚨",
       suggestions: ["¿Y si es falsa alarma?", "¿Cómo lo cancelo?"],
     }),
   },
@@ -112,14 +124,14 @@ const RULES: Rule[] = [
   {
     keywords: ["sos", "botón", "boton", "alerta", "emergencia"],
     reply: () => ({
-      text: "El **botón SOS** activa una cuenta regresiva de 10 segundos. Si no la cancelas, se envía tu ubicación, ficha médica y llamada directa al 911, además de avisar a tu contacto de confianza. Funciona manual o automático (detección de choques). 🚨",
+      text: "El **botón SOS** activa una cuenta regresiva de 10 segundos. Le ladro al peligro en tu lugar 🚨 Si no la cancelas, se envía tu ubicación, ficha médica y llamada directa al 911, además de avisar a tu contacto de confianza. Funciona manual o automático (detección de choques).",
       suggestions: ["¿Qué hace la app con mi ubicación?", "¿Es privado?"],
     }),
   },
   {
     keywords: ["ubicación", "ubicacion", "privacidad", "datos", "privado"],
     reply: () => ({
-      text: "Tu información se queda en tu dispositivo. **Solo se envía cuando TÚ activas el SOS** o cuando la detección de choques se dispara. Nunca compartimos tu ubicación con terceros ni la usamos para anuncios. 🔒",
+      text: "Olfateo tu información sólo aquí — se queda en tu dispositivo. **Solo se envía cuando TÚ activas el SOS** o cuando la detección de choques se dispara. Nunca compartimos tu ubicación con terceros ni la usamos para anuncios. 🔒",
       suggestions: ["¿Qué es la ficha S.O.S.?"],
     }),
   },
@@ -154,10 +166,74 @@ const RULES: Rule[] = [
       "electricista",
     ],
     reply: () => ({
-      text: "La app trae **8 servicios** de asistencia: hospitales, grúa, mecánico de autos, mecánico de motos, electricista, gasolina, llantera y cerrajero. Los ves en el mapa ordenados por distancia y puedes navegar directo con Google Maps. 🗺️",
+      text: "¡Husmeo 8 servicios! Hospitales, grúa, mecánico de autos, mecánico de motos, electricista, gasolina, llantera y cerrajero. Los ves en el mapa ordenados por distancia y puedes navegar directo con Google Maps. 🗺️",
       suggestions: ["¿Cómo se ve el mapa?", "¿Funciona sin internet?"],
     }),
   },
+
+  // ── Mini-juego ───────────────────────────────────────────────────────────
+  {
+    keywords: ["juego", "jugar", "rex al rescate", "ambulancia", "minijuego", "mini juego"],
+    reply: () => ({
+      text: "¡Guau guau! 🐕‍🦺 Sí tengo un mini-juego en la página: **Rex al Rescate**. Conduzco una ambulancia esquivando baches y rescatando carros varados. Le picas al botón 🐕 en el menú de arriba. ¿Le entras?",
+      suggestions: ["¿Cómo se juega?", "¿Tiene dificultades?", "¿Tienes easter eggs?"],
+    }),
+  },
+  {
+    keywords: ["cómo se juega", "como se juega", "controles", "como jugar", "cómo jugar"],
+    reply: () => ({
+      text: "Fácil 🐾:\n\n• **PC**: flechas ← → para moverte.\n• **Móvil**: desliza o toca los lados.\n\nRescata carros varados (suman puntos), esquiva baches y conos, y recoge power-ups: 🛡️ Escudo, ⛽ Gasolina, 🏥 Kit Médico. ¡A correr!",
+      suggestions: ["¿Tiene dificultades?", "¿Tienes easter eggs?"],
+    }),
+  },
+  {
+    keywords: ["dificultad", "dificultades", "modos", "modo difícil", "modo facil", "modo fácil"],
+    reply: () => ({
+      text: "Tres modos:\n\n• 🟢 **Fácil**: 4 vidas, ritmo tranquilo, muchos power-ups.\n• 🟡 **Normal**: 3 vidas, equilibrio entre reto y diversión.\n• 🔴 **Difícil**: 2 vidas, casi sin ayuda y rápido. ¿Te animas?",
+      suggestions: ["¿Cómo se juega?", "¿Tienes easter eggs?"],
+    }),
+  },
+
+  // ── Easter eggs ──────────────────────────────────────────────────────────
+  // Pistas adicionales (más específico → va antes que "easter egg"/"secreto")
+  {
+    keywords: ["pistas", "más pistas", "mas pistas", "easter eggs en el juego", "hay easter eggs en el juego"],
+    reply: () => ({
+      text: "🤫 Te doy 2 más: prueba un **código clásico de NES** en la pantalla de inicio del juego antes de pulsar Comenzar... y si logras 300 puntos en Difícil, algo cool se desbloquea para Rex 🎖️",
+      suggestions: ["¿Cómo se juega?", "¿Modos de dificultad?"],
+    }),
+  },
+  // Pista general sobre easter eggs
+  {
+    keywords: ["easter egg", "easter eggs", "secreto", "secretos", "sorpresa", "sorpresas"],
+    reply: () => ({
+      text: "¡Guau guau! 🤫 Sí escondo algunas sorpresitas, pero descubrirlas es parte del juego. Te doy una pista: a los perros nos gustan los abrazos, las caricias en la panza, y a la luna le aullamos 🐾",
+      suggestions: ["¿Hay easter eggs en el juego?", "Más pistas porfa"],
+    }),
+  },
+  // Easter egg A · abrazo
+  {
+    keywords: ["abrazo", "abrazame", "abrázame", "abracitos", "abracito"],
+    reply: () => ({
+      text: "*te abraza con sus patotas* 🐶💛 Aquí estoy, wuf wuf.",
+    }),
+  },
+  // Easter egg B · panzita
+  {
+    keywords: ["panzita", "rascar panza", "rascame", "rásame", "panza arriba"],
+    reply: () => ({
+      text: "*se voltea de panza pidiendo caricias* 🐕 Auf~ qué rico...",
+    }),
+  },
+  // Easter egg E · aullar / lobo
+  {
+    keywords: ["lobo", "aullar", "aullido", "auuu", "auuuu"],
+    reply: () => ({
+      text: "Aaaaa-uuuuuuuu... 🌙 *mira a la luna*",
+    }),
+  },
+
+  // ── Identidad y soporte ──────────────────────────────────────────────────
   {
     keywords: ["rex", "tu nombre", "quien eres", "quién eres"],
     reply: () => ({
@@ -229,5 +305,11 @@ export const FACTS = [
   "El Premium te guía en un choque paso a paso 🧑‍⚖️",
   "Tu ubicación solo se comparte cuando tú lo decides 🔒",
   "Los 8 servicios se ven en el mapa estilo radar 🗺️",
-  "¿Tienes una duda? Clic en mi icono para preguntarme 🐕",
+  "¿Dudas? Píllame con un clic, te escucho con la oreja parada 👂",
+  "¿Ya jugaste Rex al Rescate? 🐕🚑",
+  "En el juego escondo easter eggs 🤫",
+  "Reto: rescata 10 carros sin chocar 🏆",
+  "¿Modo Difícil? Cuidado con mis baches 🕳️",
+  "Un código clásico de NES desbloquea algo en el juego... 🎮",
+  "¿Has intentado rascarme la panza? 🐾",
 ];
