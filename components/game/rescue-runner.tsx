@@ -5,7 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM } from "@/components/game/audio";
 import { DIFFICULTIES, INTRO_LINES, type Difficulty } from "@/components/game/config";
-import { AMBULANCE, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, drawSprite } from "@/components/game/sprites";
+import { AMBULANCE, AMBULANCE_FRAMES, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, drawSprite } from "@/components/game/sprites";
 
 /* ── Types ── */
 type EntityKind = "car" | "pothole" | "cone" | "shield" | "fuel" | "medkit";
@@ -32,6 +32,10 @@ export function RescueRunner() {
   const [mutedUI, setMutedUI] = useState(false);
   const pausedRef = useRef(false);
   const [pausedUI, setPausedUI] = useState(false);
+
+  // Animation frame refs: direction (-1 left, 0 none, 1 right) and last hit timestamp
+  const lastInputDirRef = useRef<number>(0);
+  const lastHitAtRef = useRef<number>(0);
 
   const hsKey = (d: Difficulty) => `rex-hs-${d}`;
 
@@ -122,8 +126,14 @@ export function RescueRunner() {
     };
     const sc = () => Math.max(2.5, Math.min(W() / 90, 4.5));
 
-    const moveLeft = () => { if (lane > 0) lane--; };
-    const moveRight = () => { if (lane < LANES - 1) lane++; };
+    let inputResetTimer: ReturnType<typeof setTimeout> | null = null;
+    const setInputDir = (dir: -1 | 1) => {
+      lastInputDirRef.current = dir;
+      if (inputResetTimer) clearTimeout(inputResetTimer);
+      inputResetTimer = setTimeout(() => { lastInputDirRef.current = 0; }, 200);
+    };
+    const moveLeft = () => { if (lane > 0) { lane--; setInputDir(-1); } };
+    const moveRight = () => { if (lane < LANES - 1) { lane++; setInputDir(1); } };
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape" || e.key === "p" || e.key === "P") {
         // Handled by React state
@@ -247,6 +257,7 @@ export function RescueRunner() {
               if (shieldTimer > 0) { toasts.push({ text: "¡Escudo!", color: "#0EA5E9", y: py - 40, ttl: 40 }); }
               else if (invincibleTimer <= 0) {
                 lives--; invincibleTimer = 90;
+                lastHitAtRef.current = Date.now();
                 spawnParticles(px, py, "#E11D48", 12);
                 if (!mutedRef.current) sfxHit();
                 if (lives <= 0) {
@@ -266,9 +277,16 @@ export function RescueRunner() {
         }
       }
 
-      // Player
-      if (invincibleTimer > 0) { invincibleTimer--; if (Math.floor(invincibleTimer / 6) % 2 === 0) drawSprite(ctx, AMBULANCE, px - 9 * s, py - 10 * s, s); }
-      else drawSprite(ctx, AMBULANCE, px - 9 * s, py - 10 * s, s);
+      // Player — select animation frame based on input direction and hit state
+      const now = Date.now();
+      const isHit = now - (lastHitAtRef.current ?? 0) < 300;
+      let frameIdx = 0; // idle
+      if (isHit) frameIdx = 3;
+      else if (lastInputDirRef.current === -1) frameIdx = 1;
+      else if (lastInputDirRef.current === 1) frameIdx = 2;
+      const ambulanceFrame = AMBULANCE_FRAMES[frameIdx] ?? AMBULANCE;
+      if (invincibleTimer > 0) { invincibleTimer--; if (Math.floor(invincibleTimer / 6) % 2 === 0) drawSprite(ctx, ambulanceFrame, px - 9 * s, py - 10 * s, s); }
+      else drawSprite(ctx, ambulanceFrame, px - 9 * s, py - 10 * s, s);
 
       if (shieldTimer > 0) {
         shieldTimer--;
@@ -307,6 +325,7 @@ export function RescueRunner() {
       window.removeEventListener("resize", resize);
       canvas.removeEventListener("touchstart", onTS);
       canvas.removeEventListener("touchend", onTE);
+      if (inputResetTimer) clearTimeout(inputResetTimer);
     };
 
     if (!mutedRef.current) startBGM();

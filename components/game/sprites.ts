@@ -57,6 +57,51 @@ export const AMBULANCE_FRAMES: string[][][] = [
   ],
 ];
 
+// Helper: copia profunda del frame idle y aplica una mutación localizada
+function mutate(base: string[][], muts: Array<[number, number, string]>): string[][] {
+  const out = base.map((row) => row.slice());
+  for (const [r, c, v] of muts) {
+    if (out[r] && out[r][c] !== undefined) out[r][c] = v;
+  }
+  return out;
+}
+
+const IDLE = AMBULANCE_FRAMES[0];
+
+// Frame 1 · drift-left: orejas vuelan a la derecha (la cara se inclina hacia la izquierda)
+const FRAME_DRIFT_LEFT = mutate(IDLE, [
+  [6, 9, ""],
+  [7, 9, K],
+  [11, 18, K],
+  [11, 19, K],
+]);
+
+// Frame 2 · drift-right: espejo
+const FRAME_DRIFT_RIGHT = mutate(IDLE, [
+  [6, 18, ""],
+  [7, 18, K],
+  [11, 9, K],
+  [11, 8, K],
+]);
+
+// Frame 3 · hit: ojos cerrados (N→K), lengua de fuera
+const FRAME_HIT = mutate(IDLE, [
+  [8, 12, K],
+  [8, 15, K],
+  [11, 11, P],
+  [11, 12, P],
+  [11, 13, P],
+  [11, 14, P],
+  [11, 15, P],
+  [11, 16, P],
+  [12, 12, P],
+  [12, 13, P],
+  [12, 14, P],
+  [12, 15, P],
+]);
+
+AMBULANCE_FRAMES.push(FRAME_DRIFT_LEFT, FRAME_DRIFT_RIGHT, FRAME_HIT);
+
 // Backwards compat export: el frame por defecto.
 export const AMBULANCE = AMBULANCE_FRAMES[0];
 
