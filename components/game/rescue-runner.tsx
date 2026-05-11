@@ -66,6 +66,7 @@ export function RescueRunner() {
   const shakeRef = useRef(0);   // time remaining for screen shake (seconds)
   const slowMoRef = useRef(0);  // time remaining for slow-mo (seconds)
   const flashRef = useRef(0);   // time remaining for white flash (seconds)
+  const cycleStartRef = useRef<number>(performance.now());
 
   const particlesRef = useRef<ParticlePool | null>(null);
   useEffect(() => {
@@ -287,11 +288,39 @@ export function RescueRunner() {
       speed = cfg.baseSpeed + Math.floor(score / 500) * cfg.speedInc;
       roadOffset = (roadOffset + speed) % 35;
 
+      // Day/night cycle: 45s period
+      const cycleElapsed = (performance.now() - cycleStartRef.current) / 1000;
+      const cyclePos = (cycleElapsed % 45) / 45; // 0..1 every 45s
+      const isNight = cyclePos > 0.5;
+
+      // Sky gradient (drawn before road)
+      const sky = ctx.createLinearGradient(0, 0, 0, h);
+      if (isNight) {
+        sky.addColorStop(0, "#0b1226");
+        sky.addColorStop(1, "#1f1b3a");
+      } else {
+        sky.addColorStop(0, "#fef3c7");
+        sky.addColorStop(1, "#fcd34d");
+      }
+      ctx.fillStyle = sky;
+      ctx.fillRect(0, 0, w, h);
+
       // Begin shake transform — wraps all world drawing
       ctx.save();
       if (shakeRef.current > 0) {
         const intensity = (shakeRef.current / 0.2) * 8;
         ctx.translate((Math.random() - 0.5) * intensity, (Math.random() - 0.5) * intensity);
+      }
+
+      // Stars (night only, before road)
+      if (isNight) {
+        const nowMs = performance.now();
+        for (let i = 0; i < 30; i++) {
+          const sx = (i * 73) % w;
+          const sy = (i * 37) % (h * 0.4);
+          ctx.fillStyle = `rgba(255,255,255,${0.4 + Math.sin(nowMs / 500 + i) * 0.2})`;
+          ctx.fillRect(sx, sy, 1.5, 1.5);
+        }
       }
 
       drawRoad();
@@ -420,11 +449,12 @@ export function RescueRunner() {
       ctx.fillStyle = grad;
       ctx.fillRect(cx - 40, cy - 40, 80, 80);
 
-      // Step 17.2: Yellow headlights toward the front
+      // Step 17.2: Yellow headlights toward the front (brighter at night)
       const headX = cx;
       const headY = py - 10 * s; // top edge of ambulance
+      const headlightAlpha = isNight ? 0.7 : 0.45;
       const grad2 = ctx.createRadialGradient(headX, headY, 2, headX, headY - 80, 80);
-      grad2.addColorStop(0, "rgba(253,224,71,0.45)");
+      grad2.addColorStop(0, `rgba(253,224,71,${headlightAlpha})`);
       grad2.addColorStop(1, "rgba(253,224,71,0)");
       ctx.fillStyle = grad2;
       ctx.fillRect(headX - 50, headY - 80, 100, 100);
