@@ -5,6 +5,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 
 import { resumeAudio, sfxGameOver, sfxHit, sfxPickup, sfxRescue, startBGM, stopBGM, updateBGMTier, sfxVictoryJingle, barkHappy, barkAlert, whineSad, startPanting, stopPanting } from "@/components/game/audio";
 import { DIFFICULTIES, INTRO_LINES, type Difficulty } from "@/components/game/config";
+import { ParticlePool } from "@/components/game/effects";
 import { AMBULANCE, AMBULANCE_FRAMES, CAR_STRANDED, TRUCK_STRANDED, MOTO_STRANDED, CONE, FUEL, MEDKIT, POTHOLE, SHIELD, REX_FULL, REX_FULL_COMANDO, drawSprite } from "@/components/game/sprites";
 
 /* ── Types ── */
@@ -60,6 +61,11 @@ export function RescueRunner() {
   const lastInputDirRef = useRef<number>(0);
   const lastHitAtRef = useRef<number>(0);
   const prevScoreRef = useRef<number>(0);
+
+  const particlesRef = useRef<ParticlePool | null>(null);
+  useEffect(() => {
+    particlesRef.current = new ParticlePool(80);
+  }, []);
 
   const [skinComandoActive, setSkinComandoActive] = useState(false);
   useEffect(() => {
@@ -138,6 +144,7 @@ export function RescueRunner() {
       prevScoreRef.current = score;
     };
     let running = true;
+    let lastTime = performance.now();
     const entities: Entity[] = [];
     const toasts: Toast[] = [];
     const particles: Particle[] = [];
@@ -248,9 +255,11 @@ export function RescueRunner() {
       ctx.fillText(lt.trim(), w - 12, 52);
     };
 
-    const tick = () => {
+    const tick = (timestamp: number) => {
       if (!running) return;
       if (pausedRef.current) { requestAnimationFrame(tick); return; }
+      const dt = Math.min((timestamp - lastTime) / 1000, 0.05);
+      lastTime = timestamp;
       const w = W(), h = H();
       ctx.clearRect(0, 0, w, h);
       speed = cfg.baseSpeed + Math.floor(score / 500) * cfg.speedInc;
@@ -261,6 +270,11 @@ export function RescueRunner() {
       if (frame % currentSpawnInterval === 0) spawn();
 
       const s = sc(), px = laneX(lane), py = h - 80;
+
+      // Continuous exhaust smoke from ambulance rear
+      if (Math.random() < 0.4) {
+        particlesRef.current?.spawn("smoke", px - 2 * s, py + 8 * s, 1);
+      }
 
       for (let i = entities.length - 1; i >= 0; i--) {
         const e = entities[i];
@@ -302,6 +316,7 @@ export function RescueRunner() {
           switch (e.kind) {
             case "car":
               addScore(100);
+              particlesRef.current?.spawn("spark", ex, e.y, 12);
               toasts.push({ text: RESCUE_MSGS[Math.floor(Math.random() * RESCUE_MSGS.length)], color: "#10B981", y: py - 40, ttl: 60 });
               if (!mutedRef.current) {
                 sfxRescue();
@@ -331,17 +346,17 @@ export function RescueRunner() {
                   setScreen("over"); cleanup(); return;
                 }
               } break;
-            case "shield": shieldTimer = 300; if (!mutedRef.current) {
+            case "shield": shieldTimer = 300; particlesRef.current?.spawn("spark", ex, e.y, 12); if (!mutedRef.current) {
               sfxPickup();
               barkAlert();
             }
             toasts.push({ text: "¡SOS Shield!", color: "#0EA5E9", y: py - 40, ttl: 50 }); break;
-            case "fuel": addScore(50); if (!mutedRef.current) {
+            case "fuel": addScore(50); particlesRef.current?.spawn("spark", ex, e.y, 12); if (!mutedRef.current) {
               sfxPickup();
               barkAlert();
             }
             toasts.push({ text: "+50 ⛽", color: "#10B981", y: py - 40, ttl: 40 }); break;
-            case "medkit": if (lives < cfg.lives) lives++; if (!mutedRef.current) {
+            case "medkit": if (lives < cfg.lives) lives++; particlesRef.current?.spawn("spark", ex, e.y, 12); if (!mutedRef.current) {
               sfxPickup();
               barkAlert();
             }
@@ -352,8 +367,8 @@ export function RescueRunner() {
       }
 
       // Player — select animation frame based on input direction and hit state
-      const now = Date.now();
-      const isHit = now - (lastHitAtRef.current ?? 0) < 300;
+      const nowMs = Date.now();
+      const isHit = nowMs - (lastHitAtRef.current ?? 0) < 300;
       let frameIdx = 0; // idle
       if (isHit) frameIdx = 3;
       else if (lastInputDirRef.current === -1) frameIdx = 1;
@@ -377,7 +392,7 @@ export function RescueRunner() {
         if (t.ttl <= 0) toasts.splice(i, 1);
       }
 
-      // Particles
+      // Particles (legacy hit/game-over effects)
       for (let i = particles.length - 1; i >= 0; i--) {
         const p = particles[i];
         p.x += p.vx; p.y += p.vy; p.vy += 0.15; p.life--;
@@ -387,6 +402,11 @@ export function RescueRunner() {
         ctx.globalAlpha = 1;
         if (p.life <= 0) particles.splice(i, 1);
       }
+
+      // ParticlePool effects (smoke, sparks, dust) — drawn before HUD
+      particlesRef.current?.update(dt);
+      particlesRef.current?.draw(ctx);
+      // TODO: close-miss dust en una iteración futura
 
       drawHUD();
       for (let sy = 0; sy < h; sy += 3) { ctx.fillStyle = "rgba(0,0,0,0.06)"; ctx.fillRect(0, sy, w, 1); }
