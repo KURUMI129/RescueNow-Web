@@ -330,15 +330,16 @@ export function RescueRunner() {
           case "pothole": drawSprite(ctx, POTHOLE, ex - 7 * s, e.y - 7 * s, s); break;
           case "cone": drawSprite(ctx, CONE, ex - 7 * s, e.y - 7 * s, s); break;
           case "shield":
+            ctx.shadowColor = "#0EA5E9"; ctx.shadowBlur = 12;
             drawSprite(ctx, SHIELD, ex - 7 * s, e.y - 7 * s, s);
-            ctx.shadowColor = "#0EA5E9"; ctx.shadowBlur = 14;
-            ctx.fillStyle = "transparent"; ctx.fillRect(ex - 7 * s, e.y - 7 * s, 14 * s, 14 * s);
             ctx.shadowBlur = 0; break;
-          case "fuel": drawSprite(ctx, FUEL, ex - 7 * s, e.y - 7 * s, s); break;
+          case "fuel":
+            ctx.shadowColor = "#10B981"; ctx.shadowBlur = 12;
+            drawSprite(ctx, FUEL, ex - 7 * s, e.y - 7 * s, s);
+            ctx.shadowBlur = 0; break;
           case "medkit":
-            drawSprite(ctx, MEDKIT, ex - 7 * s, e.y - 7 * s, s);
             ctx.shadowColor = "#E11D48"; ctx.shadowBlur = 12;
-            ctx.fillStyle = "transparent"; ctx.fillRect(ex - 7 * s, e.y - 7 * s, 14 * s, 14 * s);
+            drawSprite(ctx, MEDKIT, ex - 7 * s, e.y - 7 * s, s);
             ctx.shadowBlur = 0; break;
         }
 
@@ -405,6 +406,29 @@ export function RescueRunner() {
       else if (lastInputDirRef.current === -1) frameIdx = 1;
       else if (lastInputDirRef.current === 1) frameIdx = 2;
       const ambulanceFrame = AMBULANCE_FRAMES[frameIdx] ?? AMBULANCE;
+
+      // Step 17.1: Pulsating siren halo around the ambulance
+      const sirenPhase = Math.floor(performance.now() / 250) % 2 === 0;
+      const sirenColor = sirenPhase ? "rgba(225,29,72,0.55)" : "rgba(14,165,233,0.55)";
+      const ambulanceW = AMBULANCE_FRAMES[0][0].length * s;
+      const ambulanceH = AMBULANCE_FRAMES[0].length * s;
+      const cx = (px - 9 * s) + ambulanceW / 2;
+      const cy = (py - 10 * s) + ambulanceH / 2;
+      const grad = ctx.createRadialGradient(cx, cy, 4, cx, cy, 40);
+      grad.addColorStop(0, sirenColor);
+      grad.addColorStop(1, "rgba(0,0,0,0)");
+      ctx.fillStyle = grad;
+      ctx.fillRect(cx - 40, cy - 40, 80, 80);
+
+      // Step 17.2: Yellow headlights toward the front
+      const headX = cx;
+      const headY = py - 10 * s; // top edge of ambulance
+      const grad2 = ctx.createRadialGradient(headX, headY, 2, headX, headY - 80, 80);
+      grad2.addColorStop(0, "rgba(253,224,71,0.45)");
+      grad2.addColorStop(1, "rgba(253,224,71,0)");
+      ctx.fillStyle = grad2;
+      ctx.fillRect(headX - 50, headY - 80, 100, 100);
+
       if (invincibleTimer > 0) { invincibleTimer--; if (Math.floor(invincibleTimer / 6) % 2 === 0) drawSprite(ctx, ambulanceFrame, px - 9 * s, py - 10 * s, s); }
       else drawSprite(ctx, ambulanceFrame, px - 9 * s, py - 10 * s, s);
 
