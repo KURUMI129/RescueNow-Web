@@ -20,6 +20,8 @@ type Screen = "menu" | "intro" | "play" | "paused" | "over";
 const LANES = 3;
 const RESCUE_MSGS = ["¡SOS Activado!", "¡Ficha médica enviada!", "¡Vehículo rescatado!", "¡Emergencia resuelta!", "¡Rex al rescate! 🐾"];
 
+const KONAMI = ["ArrowUp","ArrowUp","ArrowDown","ArrowDown","ArrowLeft","ArrowRight","ArrowLeft","ArrowRight","KeyZ","KeyX"];
+
 function detectLiteMode(): boolean {
   if (typeof window === "undefined" || typeof navigator === "undefined") return false;
   const lowCores = (navigator.hardwareConcurrency ?? 8) < 4;
@@ -109,6 +111,29 @@ export function RescueRunner() {
     );
   }, []);
 
+  const [_konamiBuf, setKonamiBuf] = useState<string[]>([]);
+  const [chihuahuaMode, setChihuahuaMode] = useState(false);
+  const chihuahuaRef = useRef(false);
+  useEffect(() => {
+    chihuahuaRef.current = chihuahuaMode;
+  }, [chihuahuaMode]);
+
+  useEffect(() => {
+    if (screen !== "menu") return;
+    const onKey = (e: KeyboardEvent) => {
+      setKonamiBuf((prev) => {
+        const next = [...prev, e.code].slice(-KONAMI.length);
+        if (next.length === KONAMI.length && next.every((k, i) => k === KONAMI[i])) {
+          setChihuahuaMode(true);
+          try { barkHappy(); } catch {}
+        }
+        return next;
+      });
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [screen]);
+
   /* ── Capcom-style intro sequence ── */
   useEffect(() => {
     const t1 = setTimeout(() => setIntroPhase("push-start"), 1200);
@@ -171,11 +196,11 @@ export function RescueRunner() {
 
     prevScoreRef.current = 0;
     let lane = 1, score = 0, lives = cfg.lives, frame = 0;
-    let speed = cfg.baseSpeed, shieldTimer = 0, invincibleTimer = 0, roadOffset = 0;
+    let speed = cfg.baseSpeed * (chihuahuaRef.current ? 1.8 : 1), shieldTimer = 0, invincibleTimer = 0, roadOffset = 0;
 
     const addScore = (pts: number) => {
       const prev = score;
-      score += pts;
+      score += pts * (chihuahuaRef.current ? 2 : 1);
       if (!mutedRef.current) {
         updateBGMTier(score);
         if ((prev < 50 && score >= 50) || (prev < 100 && score >= 100) || (prev < 200 && score >= 200)) {
@@ -337,7 +362,7 @@ export function RescueRunner() {
       const dt = effectiveDt;
       const w = W(), h = H();
       ctx.clearRect(0, 0, w, h);
-      speed = cfg.baseSpeed + Math.floor(score / 500) * cfg.speedInc;
+      speed = (cfg.baseSpeed + Math.floor(score / 500) * cfg.speedInc) * (chihuahuaRef.current ? 1.8 : 1);
       roadOffset = (roadOffset + speed) % 35;
 
       // ── Event system ──
@@ -558,8 +583,9 @@ export function RescueRunner() {
       ctx.fillStyle = grad2;
       ctx.fillRect(headX - 50, headY - 80, 100, 100);
 
-      if (invincibleTimer > 0) { invincibleTimer--; if (Math.floor(invincibleTimer / 6) % 2 === 0) drawSprite(ctx, ambulanceFrame, px - 9 * s, py - 10 * s, s); }
-      else drawSprite(ctx, ambulanceFrame, px - 9 * s, py - 10 * s, s);
+      const ambulanceScale = s * (chihuahuaRef.current ? 0.7 : 1);
+      if (invincibleTimer > 0) { invincibleTimer--; if (Math.floor(invincibleTimer / 6) % 2 === 0) drawSprite(ctx, ambulanceFrame, px - 9 * ambulanceScale, py - 10 * ambulanceScale, ambulanceScale); }
+      else drawSprite(ctx, ambulanceFrame, px - 9 * ambulanceScale, py - 10 * ambulanceScale, ambulanceScale);
 
       if (shieldTimer > 0) {
         shieldTimer--;
@@ -808,6 +834,11 @@ export function RescueRunner() {
           </div>
 
           <div style={{ color: "#475569", fontSize: 10, marginTop: 4 }}>Controles: ← → / A D / swipe · P = pausa</div>
+          {chihuahuaMode && (
+            <div style={{ color: "#FACC15", fontSize: 12, fontWeight: 700, marginTop: 4 }}>
+              🐕 MODO CHIHUAHUA ACTIVO
+            </div>
+          )}
           {highScore > 0 && <div style={{ color: "#FFD700", fontSize: 13, fontWeight: 700 }}>RÉCORD: {highScore}</div>}
 
           <button onClick={handleStart} style={{
@@ -850,6 +881,27 @@ export function RescueRunner() {
       {/* ── GAME CANVAS ── */}
       {(screen === "play" || screen === "paused") && (
         <div style={{ flex: 1, position: "relative" }}>
+              {/* Chihuahua mode HUD indicator */}
+          {chihuahuaMode && (
+            <div style={{
+              position: "absolute",
+              top: 60,
+              right: 12,
+              zIndex: 60,
+              background: "#FACC15",
+              color: "#000",
+              padding: "4px 10px",
+              borderRadius: 999,
+              fontFamily: "monospace",
+              fontWeight: 900,
+              fontSize: 11,
+              letterSpacing: 1,
+              pointerEvents: "none",
+            }}>
+              🐕 MODO CHIHUAHUA
+            </div>
+          )}
+
           {/* Event HUD banner */}
           {eventRef.current.state === "active" && eventRef.current.kind === "tornado" && (
             <div
