@@ -569,7 +569,7 @@ export function RescueRunner() {
               sfxPickup();
               barkAlert();
             }
-            toasts.push({ text: "+50 ⛽", color: "#10B981", y: py - 40, ttl: 40 }); break;
+            toasts.push({ text: "+25 ⛽", color: "#10B981", y: py - 40, ttl: 40 }); break;
             case "medkit": if (lives < cfg.lives) lives++; particlesRef.current?.spawn("spark", ex, e.y, 12); if (!mutedRef.current) {
               sfxPickup();
               barkAlert();
@@ -884,11 +884,11 @@ export function RescueRunner() {
           }}>
             <p style={{ color: "#94A3B8", fontSize: 11, margin: "0 0 6px", fontWeight: 700, textTransform: "uppercase", letterSpacing: 1 }}>Guía de objetos</p>
             <div style={{ display: "flex", flexDirection: "column", gap: 4, fontSize: 11 }}>
-              <span style={{ color: "#FFD700" }}>🚗 Auto varado — Tócalo para rescatarlo (+100 pts)</span>
+              <span style={{ color: "#FFD700" }}>🚗 Vehículo varado — Tócalo para rescatarlo (+60 pts)</span>
               <span style={{ color: "#E11D48" }}>🕳️ Bache — ¡Esquívalo o pierdes una vida!</span>
               <span style={{ color: "#FF6B00" }}>🔶 Cono — ¡Esquívalo o pierdes una vida!</span>
               <span style={{ color: "#0EA5E9" }}>🛡️ Escudo SOS — Invencibilidad por 5 segundos</span>
-              <span style={{ color: "#10B981" }}>⛽ Gasolina — Bonus de +50 puntos extra</span>
+              <span style={{ color: "#10B981" }}>⛽ Gasolina — Bonus de +25 puntos extra</span>
               <span style={{ color: "#E11D48" }}>🏥 Kit médico — Recupera una vida perdida</span>
             </div>
           </div>
