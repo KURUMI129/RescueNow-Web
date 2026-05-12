@@ -49,65 +49,37 @@ export function RexAvatar({
     >
       <svg
         viewBox="0 0 64 64"
-        width={size * 0.78}
-        height={size * 0.78}
+        width={size * 0.72}
+        height={size * 0.72}
         aria-hidden
       >
         <g>
-          {/* Orejas caídas estilo San Bernardo */}
+          <ellipse cx="18" cy="22" rx="8" ry="11" fill="#7C2D12" />
+          <ellipse cx="46" cy="22" rx="8" ry="11" fill="#7C2D12" />
+          <ellipse cx="32" cy="36" rx="18" ry="17" fill="#FED7AA" />
+          <ellipse cx="32" cy="42" rx="12" ry="9" fill="#FFFBEB" />
+          <circle cx="26" cy="34" r="2.4" fill="#0B1120" />
+          <circle cx="38" cy="34" r="2.4" fill="#0B1120" />
+          <circle cx="26.8" cy="33.2" r="0.8" fill="#fff" />
+          <circle cx="38.8" cy="33.2" r="0.8" fill="#fff" />
+          <ellipse cx="32" cy="40" rx="2.6" ry="1.8" fill="#0B1120" />
           <path
-            d="M10 22 Q 8 36 14 46 Q 20 48 22 38 Q 22 26 18 22 Z"
-            fill="#7C2D12"
-          />
-          <path
-            d="M54 22 Q 56 36 50 46 Q 44 48 42 38 Q 42 26 46 22 Z"
-            fill="#7C2D12"
-          />
-          {/* Tono medio interno de las orejas */}
-          <path d="M13 28 Q 12 38 16 44 Q 18 40 18 32 Z" fill="#9A3412" />
-          <path d="M51 28 Q 52 38 48 44 Q 46 40 46 32 Z" fill="#9A3412" />
-
-          {/* Cara blanca con manchas tan */}
-          <ellipse cx="32" cy="38" rx="17" ry="16" fill="#FFFBEB" />
-          <ellipse cx="24" cy="32" rx="6" ry="5" fill="#D4A373" />
-          <ellipse cx="40" cy="32" rx="6" ry="5" fill="#D4A373" />
-          <ellipse cx="32" cy="26" rx="6" ry="3" fill="#D4A373" opacity="0.6" />
-          {/* Hocico blanco */}
-          <ellipse cx="32" cy="46" rx="11" ry="7" fill="#FFFFFF" />
-          {/* Ojos con brillo */}
-          <circle cx="24" cy="34" r="2.6" fill="#0B1120" />
-          <circle cx="40" cy="34" r="2.6" fill="#0B1120" />
-          <circle cx="24.8" cy="33.0" r="0.8" fill="#fff" />
-          <circle cx="40.8" cy="33.0" r="0.8" fill="#fff" />
-          {/* Nariz */}
-          <ellipse cx="32" cy="44" rx="3.4" ry="2.2" fill="#0B1120" />
-          {/* Lengüita */}
-          <path
-            d="M30 50 Q 32 54 34 50 L 33 49 L 31 49 Z"
-            fill="#F472B6"
-          />
-          {/* Boca */}
-          <path
-            d="M28 47 Q 32 49 36 47"
+            d="M32 42 Q 28 46 26 44 M32 42 Q 36 46 38 44"
             stroke="#0B1120"
             strokeWidth="1.4"
             fill="none"
             strokeLinecap="round"
           />
-
-          {/* Gorra */}
-          <rect x="10" y="6" width="44" height="9" rx="4" fill={capFill} />
-          <rect x="14" y="14" width="36" height="3" rx="1.5" fill="#7C1D1D" opacity={comando ? "0.6" : "0.7"} />
+          <rect x="10" y="8" width="44" height="8" rx="4" fill={capFill} />
           {!comando && (
             <>
-              <rect x="28" y="2" width="8" height="10" rx="2" fill={crossFill} />
-              <rect x="30" y="4" width="4" height="6" fill={innerCross} />
-              <rect x="26" y="6" width="12" height="3" fill={innerCross} />
+              <rect x="28" y="4" width="8" height="8" rx="2" fill={crossFill} />
+              <rect x="30" y="6" width="4" height="4" fill={innerCross} />
             </>
           )}
           {comando && (
             <path
-              d="M32 4 L 33.5 7 L 36.5 7.5 L 34.2 9.6 L 35 12.6 L 32 11 L 29 12.6 L 29.8 9.6 L 27.5 7.5 L 30.5 7 Z"
+              d="M32 4 L 33.2 7 L 36.2 7.4 L 34 9.4 L 34.7 12.3 L 32 10.8 L 29.3 12.3 L 30 9.4 L 27.8 7.4 L 30.8 7 Z"
               fill="#FACC15"
             />
           )}

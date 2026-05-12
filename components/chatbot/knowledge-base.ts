@@ -199,7 +199,7 @@ const RULES: Rule[] = [
   {
     keywords: ["pistas", "más pistas", "mas pistas", "easter eggs en el juego", "hay easter eggs en el juego"],
     reply: () => ({
-      text: "🤫 Te doy 2 más: prueba un **código clásico de NES** en la pantalla de inicio del juego antes de pulsar Comenzar... y si logras 300 puntos en Difícil, algo cool se desbloquea para Rex 🎖️",
+      text: "🤫 Te doy 2 más: prueba un **código clásico de NES** en la pantalla de inicio del juego antes de pulsar Comenzar... y si logras 800 puntos en Difícil, algo cool se desbloquea para Rex 🎖️",
       suggestions: ["¿Cómo se juega?", "¿Modos de dificultad?"],
     }),
   },

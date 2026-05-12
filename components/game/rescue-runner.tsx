@@ -227,10 +227,10 @@ export function RescueRunner() {
         slowMoRef.current = 0.8;
         flashRef.current = 0.25;
       }
-      // Easter egg F: 300 pts en Difícil desbloquea Rex Comando
+      // Easter egg F: 800 pts en Difícil desbloquea Rex Comando
       if (
         diff === "hard" &&
-        score >= 300 &&
+        score >= 800 &&
         typeof window !== "undefined" &&
         !window.localStorage.getItem("rexnow-skin-comando")
       ) {
@@ -689,23 +689,30 @@ export function RescueRunner() {
         ctx.fillRect(0, 0, w, 200);
       }
 
-      // Blackout event: pantalla casi negra excepto cono de luz alrededor del jugador
+      // Blackout event: oscurece la pantalla pero deja un cono de luz amplio alrededor del jugador
       if (eventRef.current.kind === "blackout" && eventRef.current.state === "active") {
         const playerCx = laneX(lane);
         const playerCy = H() - 80;
         ctx.save();
-        // Capa negra
-        ctx.fillStyle = "rgba(0,0,0,0.92)";
+        // Capa oscura — más suave que antes para que se siga viendo lo que viene
+        ctx.fillStyle = "rgba(0,0,0,0.62)";
         ctx.fillRect(0, 0, w, h);
-        // Recortar con composite operation para hacer "agujero" alrededor del jugador
+        // Recorta un cono más amplio (faros + halo) para mejor visibilidad en Difícil
         ctx.globalCompositeOperation = "destination-out";
-        const radius = 140;
-        const blackoutGrad = ctx.createRadialGradient(playerCx, playerCy - 40, 10, playerCx, playerCy - 40, radius);
+        const radius = Math.max(220, h * 0.45);
+        const blackoutGrad = ctx.createRadialGradient(playerCx, playerCy - 40, 30, playerCx, playerCy - 40, radius);
         blackoutGrad.addColorStop(0, "rgba(0,0,0,1)");
+        blackoutGrad.addColorStop(0.6, "rgba(0,0,0,0.7)");
         blackoutGrad.addColorStop(1, "rgba(0,0,0,0)");
         ctx.fillStyle = blackoutGrad;
         ctx.fillRect(0, 0, w, h);
         ctx.restore();
+        // Brillo amarillo extra alrededor del jugador para que los obstáculos cercanos se distingan
+        const haloGrad = ctx.createRadialGradient(playerCx, playerCy - 40, 8, playerCx, playerCy - 40, 90);
+        haloGrad.addColorStop(0, "rgba(253,224,71,0.25)");
+        haloGrad.addColorStop(1, "rgba(253,224,71,0)");
+        ctx.fillStyle = haloGrad;
+        ctx.fillRect(0, 0, w, h);
       }
 
       // White flash overlay (not shaken, drawn over world but under HUD)
