@@ -689,27 +689,31 @@ export function RescueRunner() {
         ctx.fillRect(0, 0, w, 200);
       }
 
-      // Blackout event: oscurece la pantalla pero deja un cono de luz amplio alrededor del jugador
+      // Blackout event: oscurece la pantalla pero la ambulancia queda iluminada
       if (eventRef.current.kind === "blackout" && eventRef.current.state === "active") {
         const playerCx = laneX(lane);
         const playerCy = H() - 80;
         ctx.save();
-        // Capa oscura — más suave que antes para que se siga viendo lo que viene
+        // Capa oscura
         ctx.fillStyle = "rgba(0,0,0,0.62)";
         ctx.fillRect(0, 0, w, h);
-        // Recorta un cono más amplio (faros + halo) para mejor visibilidad en Difícil
+        // Cono de faros: ovalado, centrado sobre la ambulancia y extendido hacia adelante
         ctx.globalCompositeOperation = "destination-out";
-        const radius = Math.max(220, h * 0.45);
-        const blackoutGrad = ctx.createRadialGradient(playerCx, playerCy - 40, 30, playerCx, playerCy - 40, radius);
+        // Scale el contexto para hacer la elipse: alta verticalmente, normal horizontalmente
+        ctx.translate(playerCx, playerCy - 30);
+        ctx.scale(1, 1.6);
+        const radius = Math.max(150, h * 0.32);
+        const blackoutGrad = ctx.createRadialGradient(0, 0, 70, 0, 0, radius);
         blackoutGrad.addColorStop(0, "rgba(0,0,0,1)");
-        blackoutGrad.addColorStop(0.6, "rgba(0,0,0,0.7)");
+        blackoutGrad.addColorStop(0.5, "rgba(0,0,0,0.85)");
         blackoutGrad.addColorStop(1, "rgba(0,0,0,0)");
         ctx.fillStyle = blackoutGrad;
-        ctx.fillRect(0, 0, w, h);
+        ctx.fillRect(-w, -h, w * 2, h * 2);
         ctx.restore();
-        // Brillo amarillo extra alrededor del jugador para que los obstáculos cercanos se distingan
-        const haloGrad = ctx.createRadialGradient(playerCx, playerCy - 40, 8, playerCx, playerCy - 40, 90);
-        haloGrad.addColorStop(0, "rgba(253,224,71,0.25)");
+        // Brillo amarillo cálido centrado en la ambulancia para que su sprite se distinga
+        const haloGrad = ctx.createRadialGradient(playerCx, playerCy, 20, playerCx, playerCy, 110);
+        haloGrad.addColorStop(0, "rgba(253,224,71,0.32)");
+        haloGrad.addColorStop(0.5, "rgba(253,224,71,0.12)");
         haloGrad.addColorStop(1, "rgba(253,224,71,0)");
         ctx.fillStyle = haloGrad;
         ctx.fillRect(0, 0, w, h);
