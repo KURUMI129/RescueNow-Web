@@ -524,7 +524,7 @@ export function RescueRunner() {
         if (hit(e, px, py)) {
           switch (e.kind) {
             case "car":
-              addScore(100);
+              addScore(60);
               if (eventRef.current.state === "active") {
                 eventRef.current.carsRescued++;
                 setEventTick((n) => n + 1);
@@ -565,7 +565,7 @@ export function RescueRunner() {
               barkAlert();
             }
             toasts.push({ text: "¡SOS Shield!", color: "#0EA5E9", y: py - 40, ttl: 50 }); break;
-            case "fuel": addScore(50); particlesRef.current?.spawn("spark", ex, e.y, 12); if (!mutedRef.current) {
+            case "fuel": addScore(25); particlesRef.current?.spawn("spark", ex, e.y, 12); if (!mutedRef.current) {
               sfxPickup();
               barkAlert();
             }
