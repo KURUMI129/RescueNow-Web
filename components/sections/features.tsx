@@ -15,7 +15,7 @@ import {
 import { BlurText } from "@/components/ui/blur-text";
 import { GradientText } from "@/components/ui/gradient-text";
 import { Section, SectionLabel } from "@/components/ui/section";
-import { SosCartoon } from "@/components/ui/sos-cartoon";
+import { SosInteractive } from "@/components/ui/sos-interactive";
 import { TiltedCard } from "@/components/ui/tilted-card";
 
 type Feature = {
@@ -113,18 +113,7 @@ export function Features() {
           className="md:col-span-2 md:row-span-2"
         >
           <div className="relative h-full glass rounded-3xl p-2 overflow-hidden">
-            <SosCartoon />
-            <div className="pointer-events-none absolute left-4 right-4 bottom-4 z-20">
-              <div className="inline-block rounded-xl bg-black/85 backdrop-blur-sm px-4 py-2.5 max-w-md">
-                <h3 className="font-display text-lg sm:text-xl font-black text-white leading-tight">
-                  Botón SOS · 10s para cancelar
-                </h3>
-                <p className="mt-0.5 text-[11px] sm:text-xs text-white/80 leading-snug">
-                  Envía ubicación y ficha médica al 911 y al contacto de
-                  confianza.
-                </p>
-              </div>
-            </div>
+            <SosInteractive />
           </div>
         </motion.div>
 
