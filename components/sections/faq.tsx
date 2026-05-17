@@ -46,8 +46,25 @@ const FAQS = [
 export function Faq() {
   const [open, setOpen] = useState<number | null>(0);
 
+  const faqSchema = {
+    "@context": "https://schema.org",
+    "@type": "FAQPage",
+    mainEntity: FAQS.map((f) => ({
+      "@type": "Question",
+      name: f.q,
+      acceptedAnswer: {
+        "@type": "Answer",
+        text: f.a,
+      },
+    })),
+  };
+
   return (
     <Section id="faq">
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+      />
       <div className="grid lg:grid-cols-[1fr_1.4fr] gap-12 items-start">
         <div className="lg:sticky lg:top-28">
           <SectionLabel>Preguntas frecuentes</SectionLabel>
