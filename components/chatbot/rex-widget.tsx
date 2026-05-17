@@ -62,6 +62,26 @@ export function RexWidget() {
     );
   }, []);
 
+  // Acknowledge Rex Comando unlock once when chat opens
+  useEffect(() => {
+    if (!open || typeof window === "undefined") return;
+    const unlocked = window.localStorage.getItem("rexnow-skin-comando") === "1";
+    const acked = window.localStorage.getItem("rexnow-skin-comando-acked") === "1";
+    if (unlocked && !acked) {
+      window.localStorage.setItem("rexnow-skin-comando-acked", "1");
+      setMessages((m) => [
+        ...m,
+        {
+          id: uid(),
+          from: "rex",
+          text:
+            "¡Guau guau! 🎖️ Vi que ganaste mi skin de Comando — me la luciste en Difícil. Si quieres que la use, prende el toggle 🎖️ en la pantalla de inicio del juego.",
+          suggestions: ["¿Tienes más easter eggs?", "¿Cómo se juega?"],
+        },
+      ]);
+    }
+  }, [open]);
+
   useEffect(() => {
     if (listRef.current) {
       listRef.current.scrollTop = listRef.current.scrollHeight;
