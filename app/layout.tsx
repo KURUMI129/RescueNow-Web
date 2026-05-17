@@ -44,6 +44,12 @@ export const metadata: Metadata = {
     url: "https://rescuenow.me",
     siteName: "RescueNow",
   },
+  twitter: {
+    card: "summary_large_image",
+    title: "RescueNow · El copiloto que nunca te falla",
+    description:
+      "App mexicana de emergencias y asistencia vial. SOS automático, ficha médica, mapa de servicios y un asistente con IA.",
+  },
   icons: {
     icon: [
       { url: "/favicon.png", type: "image/png" },

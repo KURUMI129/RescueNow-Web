@@ -8,7 +8,8 @@
       "Read(//tmp/**)",
       "Bash(git commit *)",
       "Bash(node -e \"const mod = require\\('./components/game/sprites.ts'\\); console.log\\('AMBULANCE_FRAMES.length:', mod.AMBULANCE_FRAMES.length\\);\")",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "Bash(npm run *)"
     ]
   }
 }
