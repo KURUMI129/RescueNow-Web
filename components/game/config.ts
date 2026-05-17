@@ -18,6 +18,17 @@ export interface DifficultyConfig {
   lives: number;
   baseSpeed: number;
   speedInc: number;
+  /**
+   * Speed units added PER SECOND of elapsed game time, regardless of score.
+   * Keeps a passive player from coasting forever — Easy ramps slowly, Hard
+   * spikes fast. Stacks on top of the score-based `speedInc`.
+   */
+  timeSpeedRamp: number;
+  /**
+   * Hard cap so the ramp never makes the game literally unplayable. Includes
+   * the chihuahua x1.8 multiplier when relevant.
+   */
+  maxSpeed: number;
   /** Frames between spawns (higher = less frequent). At 60fps: 120 = every 2s */
   spawnInterval: number;
   /** Minimum spawn interval even at high scores */
@@ -36,6 +47,9 @@ export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
     lives: 4,
     baseSpeed: 2.2,
     speedInc: 0.08,
+    // Easy: ~0.025 units/s. After 60s the speed has only crept up ~1.5 units.
+    timeSpeedRamp: 0.025,
+    maxSpeed: 6,
     spawnInterval: 130,    // ~2.2 seconds between spawns
     minSpawnInterval: 70,  // never faster than ~1.2s
     spawnAccelEvery: 800,  // slow acceleration
@@ -55,6 +69,9 @@ export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
     lives: 3,
     baseSpeed: 3,
     speedInc: 0.12,
+    // Normal: ~0.06/s. After 60s ramps ~3.6 units on top of score-based speed.
+    timeSpeedRamp: 0.06,
+    maxSpeed: 8.5,
     spawnInterval: 90,     // ~1.5 seconds between spawns
     minSpawnInterval: 45,  // gets to ~0.75s at high scores
     spawnAccelEvery: 500,
@@ -74,6 +91,9 @@ export const DIFFICULTIES: Record<Difficulty, DifficultyConfig> = {
     lives: 2,
     baseSpeed: 3.8,
     speedInc: 0.18,
+    // Hard: ~0.12/s. After 60s ramps ~7 units — feels genuinely frantic.
+    timeSpeedRamp: 0.12,
+    maxSpeed: 11,
     spawnInterval: 65,     // ~1.1 seconds between spawns
     minSpawnInterval: 30,  // gets chaotic fast
     spawnAccelEvery: 300,

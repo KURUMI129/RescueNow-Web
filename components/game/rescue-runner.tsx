@@ -212,6 +212,10 @@ export function RescueRunner() {
     prevScoreRef.current = 0;
     let lane = 1, score = 0, lives = cfg.lives, frame = 0;
     let speed = cfg.baseSpeed * (chihuahuaRef.current ? 1.8 : 1), shieldTimer = 0, invincibleTimer = 0, roadOffset = 0;
+    // Track when this run started so the speed can ramp with real elapsed
+    // play time, not just with score. Resets every time the loop starts
+    // (new run = ramp begins fresh).
+    const runStart = performance.now();
 
     const addScore = (pts: number) => {
       const prev = score;
@@ -391,7 +395,16 @@ export function RescueRunner() {
       const dt = effectiveDt;
       const w = W(), h = H();
       ctx.clearRect(0, 0, w, h);
-      speed = (cfg.baseSpeed + Math.floor(score / 500) * cfg.speedInc) * (chihuahuaRef.current ? 1.8 : 1);
+      // Total speed = base + score-based step + time-based ramp, all multiplied
+      // by chihuahua bonus, then capped so it never becomes literally unplayable.
+      const elapsedSec = (performance.now() - runStart) / 1000;
+      const scoreBonus = Math.floor(score / 500) * cfg.speedInc;
+      const timeBonus = elapsedSec * cfg.timeSpeedRamp;
+      const chihuahuaMult = chihuahuaRef.current ? 1.8 : 1;
+      speed = Math.min(
+        cfg.maxSpeed * chihuahuaMult,
+        (cfg.baseSpeed + scoreBonus + timeBonus) * chihuahuaMult,
+      );
       roadOffset = (roadOffset + speed) % 35;
 
       // ── Event system ──

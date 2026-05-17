@@ -53,22 +53,59 @@ const RULES: Rule[] = [
   {
     keywords: ["premium", "paga", "pagado", "vip"],
     reply: () => ({
-      text: "¡Guau! El plan Premium cuesta **$89 MXN al mes** y añade sobre el Free:\n\n• IA sin límites con respuestas detalladas\n• Diagnóstico mecánico paso a paso\n• Asesoría ante choques y seguros\n• Primeros auxilios guiados\n• Soporte prioritario\n\nPuedes cancelar cuando quieras desde la app. 🐾",
+      text: "¡Guau! El plan Premium cuesta **$89 MXN al mes** y añade sobre el Free:\n\n• Modo Viaje con seguimiento en tiempo real 🗺️\n• Check-in Diario con racha gamificada ✅\n• Check-in de Seguridad con recordatorios cada 1-12 hrs 🛡️\n• Sonidos S.O.S. personalizados (Alarma, Sirena, Silencioso) 🔔\n• IA sin límites con respuestas detalladas y diagnóstico mecánico paso a paso\n• Asesoría ante choques y seguros + primeros auxilios guiados\n• Historial completo + estadísticas y soporte prioritario\n\nPuedes cancelar cuando quieras desde la app. 🐾",
       suggestions: ["¿Qué incluye el Free?", "¿Cómo cancelo?", "Descargar la app"],
     }),
   },
   {
     keywords: ["free", "gratis", "gratuito", "gratuita", "básico", "basico"],
     reply: () => ({
-      text: "El plan Free es **gratis para siempre** y huele a libertad 🐾. Incluye:\n\n• Botón SOS con cuenta regresiva\n• Detección automática de choques\n• Mapa en tiempo real con 8 servicios\n• Ficha médica offline\n• Tips básicos y llamada al 911\n\nPerfecto para arrancar sin pagar nada. ¿Quieres más? El Premium te destrampa la IA.",
+      text: "El plan Free es **gratis para siempre** y huele a libertad 🐾. Incluye:\n\n• Botón SOS con cuenta regresiva\n• Detección automática de choques\n• Mapa en tiempo real con 8 servicios\n• Ficha médica offline\n• Sonido S.O.S. predeterminado + vibración\n• Últimas 5 emergencias en el historial\n• Tips básicos y llamada al 911\n\nPerfecto para arrancar sin pagar nada. El Premium suma Modo Viaje, Check-ins, sonidos personalizados e IA sin límites.",
       suggestions: ["¿Qué agrega el Premium?", "Descargar la app"],
     }),
   },
   {
     keywords: ["precio", "cuesta", "cuánto", "cuanto", "costo"],
     reply: () => ({
-      text: "Los planes:\n\n• **Free**: $0, para siempre. Incluye SOS, mapa, ficha médica y servicios cercanos.\n• **Premium**: $89 MXN/mes. Suma IA sin límites, diagnósticos, escudo legal y VIP médico.\n\nCancelas cuando quieras. Sin letras chicas. 🐕",
+      text: "Los planes:\n\n• **Free**: $0, para siempre. SOS, mapa, ficha médica, servicios cercanos y sonido S.O.S. predeterminado.\n• **Premium**: $89 MXN/mes. Suma Modo Viaje, Check-in Diario, Check-in de Seguridad, sonidos personalizados, IA sin límites, diagnósticos, escudo legal y VIP médico.\n\nCancelas cuando quieras. Sin letras chicas. 🐕",
       suggestions: ["Diferencias Free vs Premium", "¿Cómo pago?"],
+    }),
+  },
+
+  // ── Funciones Premium específicas ────────────────────────────────────────
+  {
+    keywords: ["modo viaje", "viaje seguro", "compartir viaje", "trayecto seguro"],
+    reply: () => ({
+      text: "El **Modo Viaje** 🗺️ es exclusivo Premium. Eliges duración (1, 2, 4 u 8 hrs) y destino opcional. Al iniciar, tu contacto recibe un mensaje con tu ubicación de partida y un timer corre en vivo. Cuando llegas, otro mensaje confirma que estás bien. Ideal para viajes solos o trayectos largos.",
+      suggestions: ["¿Qué incluye el Premium?", "¿Y el Check-in?"],
+    }),
+  },
+  {
+    keywords: ["check-in diario", "checkin diario", "racha", "check-in racha"],
+    reply: () => ({
+      text: "**Check-in Diario con racha** ✅ es Premium. Activas un switch, eliges hora (8am, 9am, 12pm u 8pm) y cada día recibes una notificación. Tocas ESTOY BIEN y se envía un mensaje automático a tu contacto con tu racha (días consecutivos). Pensado para personas que viven solas o adultos mayores.",
+      suggestions: ["¿Qué es el Check-in de Seguridad?", "¿Qué incluye Premium?"],
+    }),
+  },
+  {
+    keywords: ["check-in de seguridad", "checkin seguridad", "recordatorio seguridad", "intervalo seguridad"],
+    reply: () => ({
+      text: "El **Check-in de Seguridad** 🛡️ es otra función Premium. A diferencia del diario (que es 1 vez al día con racha), este programa recordatorios cada 1, 2, 4, 8 o 12 horas para que confirmes que estás bien. También permite check-in manual con un toque. Útil si quieres confirmar varias veces al día.",
+      suggestions: ["¿Y el Check-in Diario?", "¿Qué incluye Premium?"],
+    }),
+  },
+  {
+    keywords: ["sonido sos", "sonidos sos", "alarma sos", "sirena", "cambiar sonido", "sonido alerta"],
+    reply: () => ({
+      text: "El plan **Free** trae el sonido S.O.S. PREDETERMINADO y la vibración. Con **Premium** desbloqueas tres sonidos más: 🔔 ALARMA, 🚨 SIRENA y 🔇 SILENCIOSO. Útiles si quieres más volumen, llamar la atención o, al contrario, una alerta discreta.",
+      suggestions: ["¿Qué incluye Premium?", "¿Cómo funciona el SOS?"],
+    }),
+  },
+  {
+    keywords: ["historial", "historial emergencias", "incidentes", "mis emergencias"],
+    reply: () => ({
+      text: "El **Historial de Emergencias** registra cada SOS y choque detectado con fecha, ubicación y si el mensaje se envió.\n\n• **Free**: ves las últimas 5 emergencias.\n• **Premium**: historial completo + estadísticas (Total, Manuales, Automáticos, Últimos 7 días) y además el Historial de Ubicaciones detallado.",
+      suggestions: ["¿Qué incluye Premium?", "¿Cómo descargo la app?"],
     }),
   },
 
@@ -189,7 +226,7 @@ const RULES: Rule[] = [
   {
     keywords: ["dificultad", "dificultades", "modos", "modo difícil", "modo facil", "modo fácil"],
     reply: () => ({
-      text: "Tres modos:\n\n• 🟢 **Fácil**: 4 vidas, ritmo tranquilo, muchos power-ups.\n• 🟡 **Normal**: 3 vidas, equilibrio entre reto y diversión.\n• 🔴 **Difícil**: 2 vidas, casi sin ayuda y rápido. ¿Te animas?",
+      text: "Tres modos:\n\n• 🟢 **Fácil**: 4 vidas, muchos power-ups. La velocidad sube DESPACIO con el tiempo.\n• 🟡 **Normal**: 3 vidas, balance. La velocidad sube a ritmo MEDIO.\n• 🔴 **Difícil**: 2 vidas, casi sin ayuda. La velocidad se DISPARA rápido.\n\nDato curioso: en cualquier modo, mientras más aguantes, más rápido va la ambulancia. Ningún modo se queda fácil para siempre 🐾",
       suggestions: ["¿Cómo se juega?", "¿Tienes easter eggs?"],
     }),
   },
