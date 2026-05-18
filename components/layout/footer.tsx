@@ -15,6 +15,7 @@ const LINKS = [
       { label: "Funciones", href: "#features" },
       { label: "Servicios", href: "#services" },
       { label: "Planes", href: "#pricing" },
+      { label: "Blog", href: "/blog" },
     ],
   },
   {
