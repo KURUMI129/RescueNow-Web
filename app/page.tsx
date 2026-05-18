@@ -2,6 +2,7 @@ import { RexWidget } from "@/components/chatbot/rex-widget";
 import { Footer } from "@/components/layout/footer";
 import { Navbar } from "@/components/layout/navbar";
 import { About } from "@/components/sections/about";
+import { AppGallery } from "@/components/sections/app-gallery";
 import { Contact } from "@/components/sections/contact";
 import { Faq } from "@/components/sections/faq";
 import { Features } from "@/components/sections/features";
@@ -17,6 +18,7 @@ export default function HomePage() {
       <Hero />
       <About />
       <Features />
+      <AppGallery />
       <Services />
       <Testimonials />
       <Pricing />
