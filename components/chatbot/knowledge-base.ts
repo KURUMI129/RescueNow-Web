@@ -208,6 +208,36 @@ const RULES: Rule[] = [
     }),
   },
 
+  // ── Contenido de la web (blog, demo, galería, PWA) ────────────────────────
+  {
+    keywords: ["blog", "artículo", "articulo", "artículos", "articulos", "posts"],
+    reply: () => ({
+      text: "¡Guau! 🐕📝 Sí tenemos blog. Está en **/blog** y hoy hay 5 artículos:\n\n• 5 cosas que debes hacer si tienes un accidente vial\n• Cómo crear tu ficha médica de emergencia\n• La regla de oro del rescate: la hora dorada\n• Sin batería, sin señal: cómo sobrevivir varado\n• Qué hacer si un familiar está en un accidente y no contesta\n\nGuías prácticas sin rodeos. Te las recomiendo aunque no instales la app.",
+      suggestions: ["¿Cómo descargo la app?", "¿Qué incluye Premium?"],
+    }),
+  },
+  {
+    keywords: ["demo", "probar sos", "probar el sos", "demo interactiva", "simular choque", "simular sos"],
+    reply: () => ({
+      text: "Olfateo que quieres probar 🐾. En la sección **Funciones** de esta misma página tenemos una **demo interactiva del SOS**: tocas 'Simular choque' y vives todo el flujo (impacto detectado → countdown de 10s → cancelar o dejar correr → llamada al 911 + ficha médica + contacto de confianza). Sin descargar nada.",
+      suggestions: ["¿Cómo funciona el SOS real?", "¿Cómo descargo la app?"],
+    }),
+  },
+  {
+    keywords: ["screenshots", "capturas", "como se ve", "cómo se ve", "como se ve la app", "pantallas", "fotos de la app", "vista previa"],
+    reply: () => ({
+      text: "¡Husmeo bien tu pregunta! 🐕 Más abajo en la página hay una sección **'Conoce la app'** con 6 pantallas reales: Home, SOS countdown, Ficha Médica S.O.S., 8 Servicios, Chatbot Rex Premium y Modo Viaje. Sin maquillaje, son screenshots tal cual.",
+      suggestions: ["¿Cómo descargo la app?", "¿Qué incluye Premium?"],
+    }),
+  },
+  {
+    keywords: ["instalar web", "pwa", "guardar en pantalla", "agregar a inicio", "app web"],
+    reply: () => ({
+      text: "Puedes instalar esta misma página como app 🐾. En Chrome/Edge móvil aparece el banner 'Instalar app' o en el menú '⋮ → Añadir a pantalla de inicio'. Queda como ícono, abre en pantalla completa y tiene acceso directo al mini-juego desde un toque largo. No reemplaza la app móvil real, pero sirve mientras llega a las tiendas.",
+      suggestions: ["¿Cómo descargo la app real?", "¿Y qué hace la app?"],
+    }),
+  },
+
   // ── Mini-juego ───────────────────────────────────────────────────────────
   {
     keywords: ["juego", "jugar", "rex al rescate", "ambulancia", "minijuego", "mini juego"],
@@ -349,4 +379,7 @@ export const FACTS = [
   "¿Modo Difícil? Cuidado con mis baches 🕳️",
   "Un código clásico de NES desbloquea algo en el juego... 🎮",
   "¿Has intentado rascarme la panza? 🐾",
+  "Hay 5 artículos en /blog para leer sin instalar nada 📝",
+  "¿Quieres probar el SOS? Hay una demo interactiva aquí mismo 🚨",
+  "¿Curioso/a? La sección 'Conoce la app' muestra capturas reales 📱",
 ];
