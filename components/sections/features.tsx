@@ -110,7 +110,7 @@ export function Features() {
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true, margin: "-60px" }}
           transition={{ duration: 0.6 }}
-          className="md:col-span-2 md:row-span-2"
+          className="row-span-2 md:col-span-2 md:row-span-2"
         >
           <div className="relative h-full glass rounded-3xl p-2 overflow-hidden">
             <SosInteractive />
