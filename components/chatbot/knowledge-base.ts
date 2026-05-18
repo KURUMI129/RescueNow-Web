@@ -16,7 +16,6 @@ const OUT_OF_SCOPE_KEYWORDS = [
   "ruido motor",
   "como arreglo",
   "cómo arreglo",
-  "primeros auxilios",
   "me duele",
   "mi moto",
   "batería muerta",
@@ -53,21 +52,21 @@ const RULES: Rule[] = [
   {
     keywords: ["premium", "paga", "pagado", "vip"],
     reply: () => ({
-      text: "¡Guau! El plan Premium cuesta **$89 MXN al mes** y añade sobre el Free:\n\n• Modo Viaje con seguimiento en tiempo real 🗺️\n• Check-in Diario con racha gamificada ✅\n• Check-in de Seguridad con recordatorios cada 1-12 hrs 🛡️\n• Sonidos S.O.S. personalizados (Alarma, Sirena, Silencioso) 🔔\n• IA sin límites con respuestas detalladas y diagnóstico mecánico paso a paso\n• Asesoría ante choques y seguros + primeros auxilios guiados\n• Historial completo + estadísticas y soporte prioritario\n\nPuedes cancelar cuando quieras desde la app. 🐾",
+      text: "¡Guau! El plan Premium cuesta **$89 MXN al mes** y añade sobre el Free:\n\n• Modo Viaje con seguimiento en tiempo real 🗺️\n• Check-in Diario con racha y mensaje automático a tu contacto ✅\n• Sonidos S.O.S. personalizados (Alarma, Sirena, Silencioso) 🔔\n• IA sin límites con respuestas detalladas y diagnóstico mecánico paso a paso\n• Primeros auxilios avanzados guiados (DEA, lesión cervical, pediátrico, embarazo) 🏥\n• Asesoría ante choques y seguros\n• Historial completo + estadísticas y soporte prioritario\n\nPuedes cancelar cuando quieras desde la app. 🐾",
       suggestions: ["¿Qué incluye el Free?", "¿Cómo cancelo?", "Descargar la app"],
     }),
   },
   {
     keywords: ["free", "gratis", "gratuito", "gratuita", "básico", "basico"],
     reply: () => ({
-      text: "El plan Free es **gratis para siempre** y huele a libertad 🐾. Incluye:\n\n• Botón SOS con cuenta regresiva\n• Detección automática de choques\n• Mapa en tiempo real con 8 servicios\n• Ficha médica offline\n• Sonido S.O.S. predeterminado + vibración\n• Últimas 5 emergencias en el historial\n• Tips básicos y llamada al 911\n\nPerfecto para arrancar sin pagar nada. El Premium suma Modo Viaje, Check-ins, sonidos personalizados e IA sin límites.",
+      text: "El plan Free es **gratis para siempre** y huele a libertad 🐾. Incluye:\n\n• Botón SOS con cuenta regresiva y llamada al 911\n• Detección automática de choques\n• Mapa en tiempo real con 8 servicios\n• Ficha médica offline\n• Sonido S.O.S. predeterminado + vibración\n• Check-in de Seguridad con recordatorios cada 1-12 hrs 🛡️\n• Primeros auxilios básicos (RCP, Heimlich, hemorragia, quemadura, desmayo) 🏥\n• Asistente IA con respuestas breves\n• Últimas 5 emergencias en el historial\n\nPerfecto para arrancar sin pagar nada. El Premium suma Modo Viaje, Check-in Diario con racha, sonidos personalizados, IA sin límites y primeros auxilios avanzados.",
       suggestions: ["¿Qué agrega el Premium?", "Descargar la app"],
     }),
   },
   {
     keywords: ["precio", "cuesta", "cuánto", "cuanto", "costo"],
     reply: () => ({
-      text: "Los planes:\n\n• **Free**: $0, para siempre. SOS, mapa, ficha médica, servicios cercanos y sonido S.O.S. predeterminado.\n• **Premium**: $89 MXN/mes. Suma Modo Viaje, Check-in Diario, Check-in de Seguridad, sonidos personalizados, IA sin límites, diagnósticos, escudo legal y VIP médico.\n\nCancelas cuando quieras. Sin letras chicas. 🐕",
+      text: "Los planes:\n\n• **Free**: $0, para siempre. SOS, mapa, ficha médica, servicios cercanos, Check-in de Seguridad, primeros auxilios básicos y asistente IA breve.\n• **Premium**: $89 MXN/mes. Suma Modo Viaje, Check-in Diario con racha + mensaje automático, sonidos personalizados, IA sin límites, diagnósticos, primeros auxilios avanzados, escudo legal y VIP médico.\n\nCancelas cuando quieras. Sin letras chicas. 🐕",
       suggestions: ["Diferencias Free vs Premium", "¿Cómo pago?"],
     }),
   },
@@ -83,14 +82,14 @@ const RULES: Rule[] = [
   {
     keywords: ["check-in diario", "checkin diario", "racha", "check-in racha"],
     reply: () => ({
-      text: "**Check-in Diario con racha** ✅ es Premium. Activas un switch, eliges hora (8am, 9am, 12pm u 8pm) y cada día recibes una notificación. Tocas ESTOY BIEN y se envía un mensaje automático a tu contacto con tu racha (días consecutivos). Pensado para personas que viven solas o adultos mayores.",
+      text: "**Check-in Diario con racha** ✅ es Premium. Activas un switch, eliges hora (8am, 9am, 12pm u 8pm) y cada día recibes una notificación. Tocas ESTOY BIEN y se envía un **mensaje automático a tu contacto de confianza** con tu racha (días consecutivos). Pensado para personas que viven solas o adultos mayores.",
       suggestions: ["¿Qué es el Check-in de Seguridad?", "¿Qué incluye Premium?"],
     }),
   },
   {
     keywords: ["check-in de seguridad", "checkin seguridad", "recordatorio seguridad", "intervalo seguridad"],
     reply: () => ({
-      text: "El **Check-in de Seguridad** 🛡️ es otra función Premium. A diferencia del diario (que es 1 vez al día con racha), este programa recordatorios cada 1, 2, 4, 8 o 12 horas para que confirmes que estás bien. También permite check-in manual con un toque. Útil si quieres confirmar varias veces al día.",
+      text: "El **Check-in de Seguridad** 🛡️ está disponible **en el plan Free**. Programa recordatorios cada 1, 2, 4, 8 o 12 horas para que confirmes que estás bien. También permite check-in manual con un toque. La diferencia con el Check-in Diario (Premium) es que este NO manda mensaje automático a tu contacto — sólo te avisa a ti. Útil si quieres confirmar varias veces al día.",
       suggestions: ["¿Y el Check-in Diario?", "¿Qué incluye Premium?"],
     }),
   },
@@ -106,6 +105,68 @@ const RULES: Rule[] = [
     reply: () => ({
       text: "El **Historial de Emergencias** registra cada SOS y choque detectado con fecha, ubicación y si el mensaje se envió.\n\n• **Free**: ves las últimas 5 emergencias.\n• **Premium**: historial completo + estadísticas (Total, Manuales, Automáticos, Últimos 7 días) y además el Historial de Ubicaciones detallado.",
       suggestions: ["¿Qué incluye Premium?", "¿Cómo descargo la app?"],
+    }),
+  },
+
+  // ── Primeros auxilios básicos (Free) ────────────────────────────────────
+  // Estos son los universales que cualquiera debería saber. El plan Free los
+  // tiene en el asistente IA. Premium suma DEA, cervical, pediátrico, embarazo.
+  {
+    keywords: ["primeros auxilios", "auxilios", "primer auxilio", "que hacer si"],
+    reply: () => ({
+      text: "🏥 En el plan **Free** Rex te guía con primeros auxilios básicos universales:\n\n• RCP (compresiones torácicas)\n• Heimlich (atragantamiento)\n• Cómo parar una hemorragia\n• Quemaduras menores\n• Desmayo y convulsiones\n\nEn **Premium** Rex va más profundo: uso de DEA, lesión cervical, primeros auxilios pediátricos y en embarazo. Pregúntame por uno específico para que te lo explique.",
+      suggestions: ["¿Cómo hago RCP?", "¿Qué hago si alguien se atraganta?", "Sangrado fuerte"],
+    }),
+  },
+  {
+    keywords: ["rcp", "reanimación", "reanimacion", "no respira", "paro cardiaco", "paro cardíaco"],
+    reply: () => ({
+      text: "**RCP básico (adulto)** 🫀:\n\n1. Llama al 911 ANTES de empezar.\n2. Recuesta a la persona en suelo firme.\n3. Coloca tus manos una sobre otra en el centro del pecho (línea de los pezones).\n4. Brazos rectos, comprime 5-6 cm de profundidad.\n5. Ritmo: 100-120 por minuto (canción 'Stayin' Alive').\n6. No pares hasta que llegue ayuda o veas respuesta.\n\nNO des respiración boca a boca si no estás entrenado. Sólo compresiones. Para niños o uso de DEA, la versión Premium de Rex te guía paso a paso.",
+      suggestions: ["¿Y si se atraganta?", "¿Cómo paro un sangrado?", "¿Qué incluye Premium?"],
+    }),
+  },
+  {
+    keywords: ["atragantamiento", "atragantarse", "atragantado", "heimlich", "se ahoga", "no puede respirar"],
+    reply: () => ({
+      text: "**Maniobra de Heimlich (adulto consciente)** 🥡:\n\n1. Pregunta: \"¿te estás ahogando?\". Si no puede hablar/toser, actúa.\n2. Párate detrás, abraza por la cintura.\n3. Cierra el puño y colócalo justo arriba del ombligo (bajo el esternón).\n4. Sujeta el puño con la otra mano y haz compresiones rápidas hacia ARRIBA y ADENTRO.\n5. Repite hasta que expulse el objeto o pierda el conocimiento.\n\nSi pierde el conocimiento → RCP + llamar 911. Para embarazadas y bebés la técnica cambia — eso está en Premium.",
+      suggestions: ["¿Cómo hago RCP?", "Sangrado fuerte", "¿Qué incluye Premium?"],
+    }),
+  },
+  {
+    keywords: ["hemorragia", "sangrado", "se desangra", "corte profundo", "hemorragica", "sangra mucho"],
+    reply: () => ({
+      text: "**Cómo parar una hemorragia** 🩸:\n\n1. Llama al 911.\n2. Presiona FUERTE y CONSTANTE sobre la herida con tela limpia o gasa.\n3. NO retires la tela aunque se empape — agrega otra capa encima.\n4. Si es en brazo o pierna, eleva el miembro sobre el nivel del corazón.\n5. Mantén presión sin pausa hasta que llegue ayuda.\n\nNO uses torniquete improvisado salvo que sea la única opción y haya entrenamiento. Heridas con objetos clavados: NO los saques, presiona alrededor.",
+      suggestions: ["¿Cómo hago RCP?", "Quemadura grave", "¿Qué incluye Premium?"],
+    }),
+  },
+  {
+    keywords: ["quemadura", "quemado", "me quemé", "me queme", "ampolla"],
+    reply: () => ({
+      text: "**Quemadura menor** 🔥:\n\n1. Pon la zona bajo agua tibia o fría (NO helada) por 10-20 min.\n2. NO uses hielo, aceite, pasta dental, mantequilla ni remedios caseros.\n3. NO revientes ampollas.\n4. Cubre con tela limpia suelta.\n5. Toma ibuprofeno si tienes a la mano.\n\n**Llama al 911 si**: la quemadura es más grande que tu palma, está en cara/manos/genitales, es por electricidad o química, o la persona es niño/anciano.",
+      suggestions: ["Sangrado fuerte", "¿Y si pierde el conocimiento?", "¿Qué incluye Premium?"],
+    }),
+  },
+  {
+    keywords: ["desmayo", "desmayado", "se desmayó", "se desmayo", "sincope", "síncope", "perdió conocimiento", "perdio conocimiento"],
+    reply: () => ({
+      text: "**Si alguien se desmaya** 😵:\n\n1. Recuéstalo en el piso.\n2. Eleva las piernas ~30 cm (ayuda a que la sangre vuelva al cerebro).\n3. Afloja ropa apretada (cuello, cinturón).\n4. Verifica que respire normal.\n5. Si despierta, espera 5 min antes de que se levante.\n\n**Llama al 911 si**: no despierta en 1 min, tiene dolor de pecho, le cuesta respirar al despertar, o tiene historial cardíaco. Si NO respira → RCP inmediato.",
+      suggestions: ["¿Cómo hago RCP?", "Convulsión", "¿Qué incluye Premium?"],
+    }),
+  },
+  {
+    keywords: ["convulsión", "convulsion", "convulsionando", "epilepsia", "ataque epiléptico"],
+    reply: () => ({
+      text: "**Durante una convulsión** ⚡:\n\n1. NO sujetes a la persona ni intentes detener los movimientos.\n2. NO metas NADA en su boca (es mito que se traga la lengua).\n3. Acomódala de lado para que la saliva drene.\n4. Pon algo blando bajo la cabeza (chamarra, almohada).\n5. Aleja objetos peligrosos.\n6. Cronometra duración.\n\n**Llama al 911 si**: dura más de 5 min, tiene varias seguidas, es la primera vez, está embarazada o se lesionó.",
+      suggestions: ["Desmayo", "¿Cómo hago RCP?", "¿Qué incluye Premium?"],
+    }),
+  },
+  // Primeros auxilios avanzados (redirige a Premium)
+  {
+    keywords: ["dea", "desfibrilador", "lesión cervical", "lesion cervical", "cuello roto", "primeros auxilios pediátricos", "auxilios pediatricos", "rcp niño", "rcp bebé", "rcp bebe", "embarazada", "embarazo emergencia"],
+    reply: () => ({
+      text: "🩺 Eso es **Premium**: primeros auxilios avanzados guiados (DEA, lesión cervical, RCP pediátrico/bebé y emergencias en embarazo). Son temas donde un paso mal dado puede empeorar las cosas, por eso Rex Premium te lleva paso a paso con video.\n\nMientras tanto, si la situación es crítica, **llama al 911 ahora**.",
+      suggestions: ["¿Qué incluye Premium?", "Contactar soporte"],
+      escalate: false,
     }),
   },
 
