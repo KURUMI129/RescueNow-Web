@@ -1,0 +1,53 @@
+{
+  "name": "RescueNow · Emergencias y asistencia vial con IA",
+  "short_name": "RescueNow",
+  "description": "App mexicana de emergencias y asistencia vial. Detección automática de choques, ficha médica S.O.S., mapa en tiempo real y asistente con IA.",
+  "lang": "es-MX",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0B1120",
+  "theme_color": "#E11D48",
+  "orientation": "portrait-primary",
+  "categories": ["medical", "navigation", "utilities", "lifestyle"],
+  "icons": [
+    {
+      "src": "/icon.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Jugar Rex al Rescate",
+      "short_name": "Juego",
+      "description": "Mini juego retro de Rex conduciendo la ambulancia",
+      "url": "/game",
+      "icons": [{ "src": "/icon.png", "sizes": "512x512" }]
+    },
+    {
+      "name": "Ver mapa de servicios",
+      "short_name": "Mapa",
+      "url": "/#hero"
+    }
+  ]
+}

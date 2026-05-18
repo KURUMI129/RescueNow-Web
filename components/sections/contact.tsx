@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { ArrowUpRight, Clock, Mail, MessageCircle, Phone } from "lucide-react";
+import { ArrowUpRight, Bell, Clock, Mail, MessageCircle, Phone } from "lucide-react";
 
 import { BlurText } from "@/components/ui/blur-text";
 import { GradientText } from "@/components/ui/gradient-text";
@@ -12,6 +12,19 @@ const WHATSAPP_DISPLAY = "+52 352 188 9522";
 const EMAIL = "karollevitafollasalazar@gmail.com";
 
 const CHANNELS = [
+  {
+    icon: Bell,
+    label: "Early access",
+    value: "Avísame cuando lance",
+    desc: "Envía un correo de un toque y te avisamos cuando esté en App Store y Google Play.",
+    href: `mailto:${EMAIL}?subject=${encodeURIComponent(
+      "Early access RescueNow",
+    )}&body=${encodeURIComponent(
+      "¡Hola equipo de RescueNow!\n\nQuiero acceso anticipado a la app. Avísenme cuando esté disponible.\n\nGracias.",
+    )}`,
+    color: "#F59E0B",
+    cta: "Reservar lugar",
+  },
   {
     icon: MessageCircle,
     label: "WhatsApp",
