@@ -109,12 +109,12 @@ export function SosInteractive() {
       {/* Background subtle dots */}
       <BgDots />
 
-      {/* Phone frame */}
-      <div className="relative z-10 w-full max-w-[280px] sm:max-w-[320px] aspect-[9/16] rounded-[36px] bg-black p-2 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.6),inset_0_0_0_3px_rgba(255,255,255,0.08)]">
+      {/* Phone frame — escala a la altura del contenedor manteniendo aspect ratio */}
+      <div className="relative z-10 h-full max-h-[520px] aspect-[9/19] rounded-[32px] bg-black p-1.5 shadow-[0_20px_60px_-10px_rgba(0,0,0,0.6),inset_0_0_0_2px_rgba(255,255,255,0.08)]">
         {/* Phone notch */}
-        <div className="absolute top-2 left-1/2 -translate-x-1/2 z-30 h-5 w-20 rounded-b-2xl bg-black" />
+        <div className="absolute top-1.5 left-1/2 -translate-x-1/2 z-30 h-4 w-16 rounded-b-2xl bg-black" />
         {/* Phone screen */}
-        <div className="relative h-full w-full overflow-hidden rounded-[28px]" style={{ background: screenBg(phase) }}>
+        <div className="relative h-full w-full overflow-hidden rounded-[26px]" style={{ background: screenBg(phase) }}>
           {/* Status bar */}
           <div className="absolute top-0 left-0 right-0 z-20 flex items-center justify-between px-5 pt-2 text-[10px] font-bold text-white/90">
             <span>9:41</span>
@@ -169,24 +169,24 @@ function SceneIdle({ onTrigger }: { onTrigger: () => void }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 flex flex-col items-center justify-center p-5 text-center"
+      className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center"
     >
-      <div className="mb-4 text-5xl sm:text-6xl">🚗💨</div>
-      <p className="text-white/85 text-xs sm:text-sm font-bold leading-snug">
+      <div className="mb-3 text-4xl">🚗💨</div>
+      <p className="text-white/85 text-xs font-bold leading-snug">
         Simula una emergencia
       </p>
-      <p className="mt-1 text-white/55 text-[10px] sm:text-[11px] leading-snug max-w-[180px]">
+      <p className="mt-1 text-white/55 text-[10px] leading-snug max-w-[160px]">
         Toca para activar la detección automática de choques
       </p>
       <motion.button
         onClick={onTrigger}
         whileTap={{ scale: 0.95 }}
         whileHover={{ scale: 1.04 }}
-        className="mt-6 rounded-full bg-brand-crimson px-6 py-2.5 text-sm font-extrabold text-white shadow-lg shadow-brand-crimson/40"
+        className="mt-5 rounded-full bg-brand-crimson px-5 py-2 text-xs font-extrabold text-white shadow-lg shadow-brand-crimson/40"
       >
         💥 Simular choque
       </motion.button>
-      <p className="absolute bottom-3 left-0 right-0 text-center text-[9px] text-white/40 px-4">
+      <p className="absolute bottom-2 left-0 right-0 text-center text-[8px] text-white/40 px-3">
         Detectamos impactos &gt; 4G con el acelerómetro
       </p>
     </motion.div>
@@ -199,21 +199,21 @@ function SceneDetected() {
       initial={{ opacity: 0, scale: 0.85 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 flex flex-col items-center justify-center p-5 text-center"
+      className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center"
     >
       <motion.div
         animate={{ scale: [1, 1.2, 1] }}
         transition={{ duration: 0.4, repeat: 1 }}
-        className="text-6xl mb-3"
+        className="text-5xl mb-2"
       >
         💥
       </motion.div>
-      <p className="text-white text-base font-black uppercase tracking-wider">
+      <p className="text-white text-sm font-black uppercase tracking-wider">
         Impacto detectado
       </p>
-      <p className="mt-2 text-white/80 text-xs font-bold">4.2 G · Confirmado</p>
-      <div className="mt-4 flex items-center gap-1.5 text-[11px] text-white/70">
-        <span className="h-2 w-2 rounded-full bg-yellow-300 animate-pulse" />
+      <p className="mt-1 text-white/80 text-[11px] font-bold">4.2 G · Confirmado</p>
+      <div className="mt-3 flex items-center gap-1.5 text-[10px] text-white/70">
+        <span className="h-1.5 w-1.5 rounded-full bg-yellow-300 animate-pulse" />
         Iniciando protocolo SOS
       </div>
     </motion.div>
@@ -226,13 +226,13 @@ function SceneCountdown({ count, onCancel }: { count: number; onCancel: () => vo
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 flex flex-col items-center justify-between p-5"
+      className="absolute inset-0 flex flex-col items-center justify-between p-4"
     >
-      <div className="mt-6 text-center">
-        <p className="text-white/90 text-[11px] font-bold uppercase tracking-widest">
+      <div className="mt-5 text-center">
+        <p className="text-white/90 text-[10px] font-bold uppercase tracking-widest">
           Llamando al 911 en
         </p>
-        <p className="mt-1 text-white/60 text-[10px]">¿Estás bien? Cancela si fue falsa alarma</p>
+        <p className="mt-1 text-white/60 text-[9px]">Cancela si fue falsa alarma</p>
       </div>
 
       <motion.span
@@ -243,8 +243,8 @@ function SceneCountdown({ count, onCancel }: { count: number; onCancel: () => vo
         transition={{ duration: 0.25, ease: [0.34, 1.56, 0.64, 1] }}
         className="font-display font-black text-white select-none leading-none"
         style={{
-          fontSize: "clamp(5rem, 14vw, 7rem)",
-          textShadow: "0 0 30px rgba(255,255,255,0.4)",
+          fontSize: "clamp(4rem, 10vw, 5.5rem)",
+          textShadow: "0 0 24px rgba(255,255,255,0.4)",
         }}
       >
         {count}
@@ -254,8 +254,8 @@ function SceneCountdown({ count, onCancel }: { count: number; onCancel: () => vo
         onClick={onCancel}
         whileTap={{ scale: 0.94 }}
         whileHover={{ scale: 1.03 }}
-        className="mb-5 rounded-full bg-white px-7 py-3 text-sm font-black text-brand-crimson shadow-2xl"
-        style={{ boxShadow: "0 0 40px rgba(255,255,255,0.45)" }}
+        className="mb-4 rounded-full bg-white px-5 py-2.5 text-xs font-black text-brand-crimson shadow-2xl"
+        style={{ boxShadow: "0 0 32px rgba(255,255,255,0.45)" }}
       >
         CANCELAR SOS
       </motion.button>
@@ -269,21 +269,21 @@ function SceneCancelled() {
       initial={{ opacity: 0, scale: 0.85 }}
       animate={{ opacity: 1, scale: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 flex flex-col items-center justify-center p-5 text-center"
+      className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center"
     >
       <motion.div
         initial={{ scale: 0, rotate: -45 }}
         animate={{ scale: 1, rotate: 0 }}
         transition={{ duration: 0.4, ease: [0.34, 1.56, 0.64, 1] }}
-        className="h-16 w-16 rounded-full bg-white flex items-center justify-center text-3xl"
+        className="h-12 w-12 rounded-full bg-white flex items-center justify-center text-2xl"
       >
         ✓
       </motion.div>
-      <p className="mt-4 text-white text-base font-black uppercase tracking-wider">
+      <p className="mt-3 text-white text-sm font-black uppercase tracking-wider">
         Falsa alarma
       </p>
-      <p className="mt-1 text-white/80 text-xs">SOS cancelado a tiempo</p>
-      <p className="mt-4 text-white/50 text-[10px]">Reiniciando demo...</p>
+      <p className="mt-1 text-white/80 text-[11px]">SOS cancelado a tiempo</p>
+      <p className="mt-3 text-white/50 text-[9px]">Reiniciando demo...</p>
     </motion.div>
   );
 }
@@ -299,7 +299,7 @@ function SceneSending({ step }: { step: 1 | 2 | 3 }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 flex flex-col items-center justify-center px-5 gap-3"
+      className="absolute inset-0 flex flex-col items-center justify-center px-3 gap-2"
     >
       {items.map((it, i) => {
         const idx = i + 1;
@@ -315,19 +315,19 @@ function SceneSending({ step }: { step: 1 | 2 | 3 }) {
               x: 0,
             }}
             transition={{ duration: 0.3 }}
-            className="flex items-center gap-3 w-full rounded-xl bg-white/10 backdrop-blur-sm px-3 py-2.5 border border-white/10"
+            className="flex items-center gap-2 w-full rounded-xl bg-white/10 backdrop-blur-sm px-2.5 py-2 border border-white/10"
           >
             <div
-              className="flex-none h-9 w-9 rounded-full flex items-center justify-center text-base"
+              className="flex-none h-8 w-8 rounded-full flex items-center justify-center text-sm"
               style={{ background: isDone ? "#10B981" : isActive ? it.color : "#475569" }}
             >
               {isDone ? "✓" : it.emoji}
             </div>
             <div className="flex-1 min-w-0">
-              <p className="text-white text-[11px] font-black uppercase tracking-wider truncate">
+              <p className="text-white text-[10px] font-black uppercase tracking-wider truncate">
                 {it.title}
               </p>
-              <p className="text-white/70 text-[10px] truncate">{it.subtitle}</p>
+              <p className="text-white/70 text-[9px] truncate">{it.subtitle}</p>
             </div>
             {isActive && (
               <div className="flex gap-0.5">
@@ -354,21 +354,21 @@ function SceneComplete() {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       exit={{ opacity: 0 }}
-      className="absolute inset-0 flex flex-col items-center justify-center p-5 text-center"
+      className="absolute inset-0 flex flex-col items-center justify-center p-4 text-center"
     >
       <motion.div
         initial={{ scale: 0 }}
         animate={{ scale: 1 }}
         transition={{ duration: 0.5, ease: [0.34, 1.56, 0.64, 1] }}
-        className="h-20 w-20 rounded-full bg-white flex items-center justify-center text-4xl"
+        className="h-16 w-16 rounded-full bg-white flex items-center justify-center text-3xl"
       >
         🚑
       </motion.div>
-      <p className="mt-4 text-white text-base font-black uppercase tracking-wider">
+      <p className="mt-3 text-white text-sm font-black uppercase tracking-wider">
         Ayuda en camino
       </p>
-      <p className="mt-1 text-white/85 text-xs">911 confirmó el llamado</p>
-      <p className="mt-3 text-white/60 text-[10px] max-w-[200px]">
+      <p className="mt-1 text-white/85 text-[11px]">911 confirmó el llamado</p>
+      <p className="mt-2 text-white/60 text-[9px] max-w-[180px]">
         Mantén la calma. Los servicios de emergencia ya tienen tu ubicación.
       </p>
     </motion.div>
